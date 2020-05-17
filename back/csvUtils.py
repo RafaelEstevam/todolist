@@ -74,4 +74,17 @@ def processCSV(request):
         "tasks" : calcScoreTasks(addTasks(json_data))
     }
 
+    j = open("json/tasks.json", "w")
+    j.write(str(taskList).replace("'", '"'))
+    j.close()
+
     return taskList
+
+# def getTaskCSV(taskId):
+#     f = csv.reader(open('csvs/newfile.csv'), delimiter=',')
+#     for line in f :
+#         if line[0] == taskId : 
+#             line = {"id" : line[0], "name": line[1], "parentTaskId" : line[2], "score" : line[3], "totalScore": line [4]}
+#             return json.dumps(line)
+    
+#     # return taskId

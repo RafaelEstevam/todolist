@@ -1,7 +1,4 @@
-// import api from '../services/api.js'
-
 var csv_tasks = [];
-// var csv_tasks_merged = [];
 
 export default {
 
@@ -51,21 +48,6 @@ export default {
         }
         read();
     },
-
-    // csvSubmit: function(tasks){
-    //     var taskList = {
-    //         tasks: tasks
-    //     }
-    //     taskList = JSON.stringify(taskList);
-    //     $.ajax({
-    //         type: "POST",
-    //         url: api + "/csv",
-    //         contentType: "application/json; charset=utf-8", // permite requisições que enviam dados do tipo json
-    //         data: taskList
-    //     }).then(function (res){
-    //         console.log(res);
-    //     })
-    // },
 
     csvRemoveSubtasks: function(tasks){
         var csvList = tasks;
