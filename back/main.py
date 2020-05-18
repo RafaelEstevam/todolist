@@ -18,7 +18,7 @@ def hello():
 def createCSV():
     return csvUtils.processCSV(request)
 
-@app.route("/tasks/json", methods=['GET'])
+@app.route("/tasks", methods=['GET'])
 @cross_origin()
 def getJsonTasks():
     return tasksController.getTasks()
