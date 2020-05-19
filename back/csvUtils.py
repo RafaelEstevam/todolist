@@ -1,10 +1,9 @@
 import csv
 import json
-import requests
 
 mergedTasks = []
 
-def facTask(task):
+def generateTask(task):
     return {
             "id" : int(task[0]),
             "name" : task[1],
@@ -14,6 +13,17 @@ def facTask(task):
             "subtask" : []
         }
 
+def writeTaskOfArray(file, taskList):
+    for task in taskList:
+        file.writerow([
+            task["id"], 
+            task["name"],
+            task["parentTaskId"],
+            task["score"],
+            task["totalScore"],
+            ""
+        ])
+        
 
 def searchParentTask(task, taskList):
     #Enquando não encontrar a task pai ele continua procurando dentro da árvore de tasks, passando como ponto inicial o array de subtask do pai.
@@ -66,15 +76,7 @@ def processCSV(request):
     json_data = request.get_json()
     f = csv.writer(open("csvs/newfile.csv", "w", newline=''))
     f.writerow(["id", "name", "parentTaskId", "score", "totalScore", "subtask"])
-    for task in json_data['tasks']:
-        f.writerow([
-            task["id"], 
-            task["name"],
-            task["parentTaskId"],
-            task["score"],
-            task["totalScore"],
-            ""
-        ])
+    writeTaskOfArray(f, json_data['tasks'])
     return processJSON(json_data)
 
 def processJSON(taskList):
@@ -92,28 +94,11 @@ def deleteTaskAndProcessCSV(taskId):
     r = csv.reader(open("csvs/newfile.csv"))
     for task in r :
         if task[0] != taskId and task[0] != 'id':
-            # task = {
-            #     "id" : int(task[0]),
-            #     "name" : task[1],
-            #     "parentTaskId" : int(task[2]),
-            #     "score" : int(task[3]),
-            #     "totalScore" : int(task[4]),
-            #     "subtask" : []
-            # }
-            task = facTask(task)
+            task = generateTask(task)
             newTaskList.append(task)
 
     f = csv.writer(open("csvs/newfile.csv", "w", newline=''))
-    for item in newTaskList:
-        f.writerow([
-            item["id"], 
-            item["name"],
-            item["parentTaskId"],
-            item["score"],
-            item["totalScore"],
-            ""
-        ])
-
+    writeTaskOfArray(f, newTaskList)
     newTaskList = {"tasks" : newTaskList}
     processJSON(newTaskList)
     return 'test'
@@ -121,19 +106,10 @@ def deleteTaskAndProcessCSV(taskId):
 def createTaskInCSV(request):
     json_data = request.get_json()
     newTaskList = []
-
     r = csv.reader(open("csvs/newfile.csv"))
     for task in r :
         if task[0] != 'id':
-            # task = {
-            #     "id" : int(task[0]),
-            #     "name" : task[1],
-            #     "parentTaskId" : int(task[2]),
-            #     "score" : int(task[3]),
-            #     "totalScore" : int(task[4]),
-            #     "subtask" : []
-            # }
-            task = facTask(task)
+            task = generateTask(task)
             newTaskList.append(task)
 
     for newTask in json_data['tasks']:
@@ -149,15 +125,10 @@ def createTaskInCSV(request):
 
     f = csv.writer(open("csvs/newfile.csv", "w", newline=''))
     f.writerow(["id", "name", "parentTaskId", "score", "totalScore", "subtask"])
-    for item in newTaskList:
-        f.writerow([
-            item["id"], 
-            item["name"],
-            item["parentTaskId"],
-            item["score"],
-            item["totalScore"],
-            ""
-        ])
+    writeTaskOfArray(f, newTaskList)
 
     newTaskList = {"tasks" : newTaskList}
     return processJSON(newTaskList)
+
+def editTaskAndProcessCSV(taskId):
+    return 'TODO'
