@@ -1,6 +1,14 @@
+# TO DO APP
+# Descrição: Backend de aplicação para criação/gestão de uma lista de tarefas com armazenamento em arquivo .CSV
+# Objetivo: Fornecer uma API simples para gestão de tarefas importadas no CSV. Disponibilizar serviço para download do CSV de tarefas e CRUD de tarefas
+# Bibliotecas usadas:
+#       Flask - Bilioteca para disponibilizar APIs
+#       Flask Cors - Bilioteca para possibilitar requisições de outras origens.
+# Criador: Rafael Estevam de Oliveira
+
 import csvUtils
 import sprintUtils
-import tasksController
+import taskUtils
 
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS, cross_origin
@@ -27,7 +35,7 @@ def getCSV():
 @app.route("/tasks", methods=['GET'])
 @cross_origin()
 def getTasksInJSON():
-    return tasksController.getTasks()
+    return taskUtils.getTasks()
 
 @app.route("/tasks/new", methods=['POST'])
 @cross_origin()
@@ -37,7 +45,7 @@ def createTaskInCSV():
 @app.route("/tasks/<taskId>", methods=['GET'])
 @cross_origin()
 def getTaskInJSON(taskId):
-    return tasksController.getTask(taskId)
+    return taskUtils.getTask(taskId)
 
 @app.route("/tasks/<taskId>", methods=['DELETE'])
 @cross_origin()
@@ -47,7 +55,7 @@ def deleteTaskInCSV(taskId):
 @app.route("/tasks/<taskId>", methods=['PUT'])
 @cross_origin()
 def updateTaskInCSV(taskId):
-    return csvUtils.editTaskAndProcessCSV(taskId)
+    return csvUtils.editTaskAndProcessCSV(taskId, request)
 
 @app.route("/sprints", methods=['POST'])
 @cross_origin()
