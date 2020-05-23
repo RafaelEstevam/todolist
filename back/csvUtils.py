@@ -6,19 +6,21 @@ mergedTasks = []
 def generateTask(task, converter):
     # - task(Objeto) = Objeto com chaves e valores referentes a uma task
     # - converter(Booleano) = Se verdadeiro, converter alguns dados do objeto e devolver objeto, senão devolve somente o objeto
-
+    print(task)
     if converter == True :
         return {
                 "id" : int(task[0]),
-                "name" : task[1],
-                "parentTaskId" : int(task[2]),
-                "score" : int(task[3]),
-                "totalScore" : int(task[4]),
+                "index": int(task[1]),
+                "name" : task[2],
+                "parentTaskId" : int(task[3]),
+                "score" : int(task[4]),
+                "totalScore" : int(task[5]),
                 "subtask" : []
             }
     else:
         return {
                 "id" : task["id"],
+                "index" : task["index"],
                 "name" : task["name"],
                 "parentTaskId" : task["parentTaskId"],
                 "score" : task["score"],
@@ -30,10 +32,11 @@ def writeTaskOfArray(taskList):
     # - taskList(Vetor) = Lista de tarefas para ser armazenada no CSV
 
     file = csv.writer(open("csvs/newfile.csv", "w", newline=''))
-    file.writerow(["id", "name", "parentTaskId", "score", "totalScore", "subtask"])
+    file.writerow(["id", "index", "name", "parentTaskId", "score", "totalScore", "subtask"])
     for task in taskList:
         file.writerow([
-            task["id"], 
+            task["id"],
+            task["index"], 
             task["name"],
             task["parentTaskId"],
             task["score"],
@@ -57,10 +60,9 @@ def addTasks(tasks):
     # Organizar em forma de "árvore" as tasks vindas pelo json. Essa organização usa o id da task pai como referência para adicionar as tasks filhas
     # Essa função retorna a lista de tarefas organizada
     # - tasks(Objeto) = Objeto com lista de tasks à ser processada
-
     mergedTasks = []
     for task in tasks['tasks']:
-        if task['parentTaskId'] == 0:
+        if task['index'] == 1:
             mergedTasks.append(task)
         else:
             searchParentTask(task, mergedTasks)
@@ -109,6 +111,7 @@ def processCSV(request):
 def processJSON(taskList):
     # Processamento do json das tasks. Retorna um JSON com a lista de tasks organizadas
     # - taskList(Objeto) = Objeto com lista de tarefas para ser processada e gerar o JSON - Estrutura esperada : {"tasks" : taskList(array)}
+    taskList["tasks"].sort(key=lambda item: item.get('index') )
 
     taskList = {
         "tasks" : calcScoreTasks(addTasks(taskList))
