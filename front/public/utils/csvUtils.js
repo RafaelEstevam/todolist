@@ -1,11 +1,8 @@
 var csv_tasks = [];
 
 export default {
-
     csvSave: function(){ // processa os ítens do csv e adiciona num array ordenado a partir do parentTaskId
-
         var csv_tasks_merged = [];
-
         csv_tasks.forEach( function(item, index){
             if(index > 0){
                 var itemTask = item.split(",");
@@ -27,17 +24,13 @@ export default {
     },
 
     csvImport: function (){
-        
         csv_tasks = [];
-
         var csv_file = $("#csv_file");
         var reader = new FileReader();
-        
         function read() {
             var csv = $(csv_file).prop('files')[0];
             reader.readAsText(csv)
         }
-        
         reader.onload = function(){
             reader.result.split("\n").forEach(function (item, index){
                 if(item.length == 0){
