@@ -1,21 +1,95 @@
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title></title>
         <link rel="stylesheet" href="assets/css/bootstrap.css" />
         <link rel="stylesheet" href="assets/css/main.css" />
     </head>
-
-    <style>
-        
-    </style>
-
     <body>
-        <div id="historyWrapper">
-            
+        <div class="interface">
+            <div class="interface-bar-tools">
+                <button class="main-btn main-circle main-bg-dark text-white">0</button>
+                <button class="main-btn main-circle main-bg-primary text-white">0</button>
+            </div>
+            <div class="interface-wrapper">
+                <div class="interface-wrapper-tools">
+                    <div class="main">
+                        <div class="interface-wrapper-tools-buttons">
+                            <button class="main-circle main-btn main-bg-dark text-white mr-3" id="import">I</button>
+                            <button class="main-circle main-btn main-bg-primary text-white" type="button" data-toggle="modal" data-target="#addTask">Add Tasks</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="interface-wrapper-dashboard">
+                    <div class="container-fluid interface-wrapper-scroll">
+                        <div class="main py-3">
+                            <h1 class="text-white font-weight-light">Sprint <span class="font-weight-bold main-text-primary">Backlog</span></h1>
+                        </div>
+                        <div id="historyWrapper" class="main interface-wrapper-history"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="addTask" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content main-bg-dark">
+                    <form class="container-fluid mb-0" id="formTask">
+                        <div class="row">
+                            <div class="col-12 text-center text-white py-3">
+                                <h2 id="modalTitle" class="font-weight-light text-white">Crie uma tarefa</h2>
+                            </div>
+                            <div class="col-12 text-white">
+                                <input type="text" id="idInput" name="id" class="form-control main-bg-gray text-white main-input mb-3">
+                            </div>
+                            <div class="col-12 text-white">
+                                <input type="text" id="nameInput" name="name" class="form-control main-bg-gray text-white main-input mb-3">
+                            </div>
+                            <div class="col-12 text-white">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="number" id="scoreInput" placeholder="Pontuação" name="score" class="form-control main-bg-gray text-white main-input mb-3">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select name="status" id="statusSelect" class="form-control main-bg-gray text-white main-input mb-3">
+                                            <option>Selecione um status</option>
+                                            <option value="to-do">Para fazer</option>
+                                            <option value="done">Concluida</option>
+                                            <option value="in-progress">Em progresso</option>
+                                            <option value="blocked">Bloqueada</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 text-white">
+                                <select class="form-control main-bg-gray text-white main-input mb-3" id="parentTaskSelect" name="parentTaskId">
+                                    <option data-index="0" value="0">Selecione uma tarefa pai</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <input type="number" value="1" readonly="readonly" name="index" id="indexParentInput" class="form-control main-bg-gray text-white main-input mb-3">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 main-bg-deep py-3 d-flex justify-content-between align-itens-center">
+                                <div>
+                                    <button type="button" id="deleteTask" class="main-btn main-text-danger bg-transparent mr-3" data-dismiss="modal">Apagar tarefa</button>
+                                </div>
+                                <div class="d-flex justify-content-end align-itens-center">
+                                    <button type="button" class="main-btn main-rounded text-white main-bg-danger mr-3" data-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="main-btn main-rounded text-white main-bg-success" id="taskSubmit">Salvar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </body>
 
-    <script src="./jquery.js"></script>
+    <script src="./assets/js/jquery.js"></script>
+    <script src="./assets/js/popper.min.js"></script>
+    <script src="./assets/js/bootstrap.js"></script>
     <script src="./main.js" type="module"></script>
 
 </html>

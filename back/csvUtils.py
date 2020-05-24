@@ -6,7 +6,6 @@ mergedTasks = []
 def generateTask(task, converter):
     # - task(Objeto) = Objeto com chaves e valores referentes a uma task
     # - converter(Booleano) = Se verdadeiro, converter alguns dados do objeto e devolver objeto, senão devolve somente o objeto
-    print(task)
     if converter == True :
         return {
                 "id" : int(task[0]),
@@ -15,6 +14,7 @@ def generateTask(task, converter):
                 "parentTaskId" : int(task[3]),
                 "score" : int(task[4]),
                 "totalScore" : int(task[5]),
+                "status" : task[6],
                 "subtask" : []
             }
     else:
@@ -25,6 +25,7 @@ def generateTask(task, converter):
                 "parentTaskId" : task["parentTaskId"],
                 "score" : task["score"],
                 "totalScore" : task["totalScore"],
+                "status" : task["status"],
                 "subtask" : []
             }
 
@@ -32,7 +33,7 @@ def writeTaskOfArray(taskList):
     # - taskList(Vetor) = Lista de tarefas para ser armazenada no CSV
 
     file = csv.writer(open("csvs/newfile.csv", "w", newline=''))
-    file.writerow(["id", "index", "name", "parentTaskId", "score", "totalScore", "subtask"])
+    file.writerow(["id", "index", "name", "parentTaskId", "score", "totalScore", "status", "subtask"])
     for task in taskList:
         file.writerow([
             task["id"],
@@ -41,6 +42,7 @@ def writeTaskOfArray(taskList):
             task["parentTaskId"],
             task["score"],
             task["totalScore"],
+            task["status"],
             ""
         ])
         
@@ -128,7 +130,7 @@ def deleteTaskAndProcessCSV(taskId):
     newTaskList = []
     r = csv.reader(open("csvs/newfile.csv"))
     for task in r :
-        if task[0] != taskId and task[0] != 'id':
+        if task[0] != taskId and task[0] != 'id' and task[3] != taskId:
             task = generateTask(task, True)
             newTaskList.append(task)
     
@@ -142,13 +144,19 @@ def createTaskInCSV(request):
 
     json_data = request.get_json()
     newTaskList = []
+    newId = 0
     r = csv.reader(open("csvs/newfile.csv"))
     for task in r :
         if task[0] != 'id':
             task = generateTask(task, True)
             newTaskList.append(task)
+            if task["id"] > newId :
+                newId = task["id"]
+            else:
+                newId = newId
 
     for newTask in json_data['tasks']:
+        newTask["id"] = newId + 1
         newTask = generateTask(newTask, False)
         newTaskList.append(newTask)
 
