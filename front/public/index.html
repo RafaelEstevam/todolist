@@ -9,17 +9,17 @@
     </head>
     <body>
         <div class="interface">
-            <div class="interface-bar-tools">
+            <!-- <div class="interface-bar-tools">
                 <button class="main-btn main-circle main-bg-dark text-white">0</button>
                 <button class="main-btn main-circle main-bg-primary text-white">0</button>
-            </div>
+            </div> -->
             <div class="interface-wrapper">
                 <div class="interface-wrapper-tools">
                     <div class="main">
                         <div class="interface-wrapper-tools-buttons">
                             <button class="main-circle main-btn main-bg-dark text-white mr-3" title="Importar" id="import" data-toggle="modal" data-target="#importTasks"><i class="fa fa-upload"></i></button>
                             <a href="http://127.0.0.1:5000/csv/export" target="_blank"  title="Exportar" class="main-circle main-btn main-bg-danger text-white mr-3"><i class="fa fa-download"></i></a>
-                            <button class="main-circle main-btn main-bg-primary text-white" type="button" data-toggle="modal" data-target="#addTask"><i class="fa fa-check mr-3"></i> Add Tasks</button>
+                            <button id="addTaskButton" class="main-circle main-btn main-bg-primary text-white" type="button"><i class="fa fa-check mr-3"></i> Add Tasks</button>
                         </div>
                     </div>
                 </div>
@@ -39,10 +39,14 @@
                     <form class="container-fluid mb-0" id="formTask">
                         <div class="row">
                             <div class="col-12 text-center text-white py-3">
-                                <h2 id="modalTitle" class="font-weight-light text-white">Crie uma tarefa</h2>
+                                <h2 id="modalTitle" class="font-weight-light text-white">Dados da tarefa</h2>
+                            </div>
+                            <div class="col-12 d-flex justify-content-between">
+                                <p class="text-white font-weight-bold">Pontuação total: <span id="totalPoints"></span></p>
+                                <p class="text-white font-weight-bold">Pontuação: <span id="scoreTask"></span></p>
                             </div>
                             <div class="col-12 text-white">
-                                <input type="text" placeholder="ID da tarefa" id="idInput" readonly="readonly" name="id" class="form-control main-bg-gray text-white main-input mb-3">
+                                <input type="hidden" placeholder="ID da tarefa (preenchido automaticamente)" id="idInput" readonly="readonly" name="id" class="form-control main-bg-gray text-white main-input mb-3">
                             </div>
                             <div class="col-12 text-white">
                                 <input type="text" id="nameInput" placeholder="Nome da tarefa" name="name" class="form-control main-bg-gray text-white main-input mb-3">
@@ -54,7 +58,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <select name="status" id="statusSelect" class="form-control main-bg-gray text-white main-input mb-3">
-                                            <option>Selecione um status</option>
+                                            <option value="">Selecione um status</option>
                                             <option value="to-do">Para fazer</option>
                                             <option value="done">Concluida</option>
                                             <option value="in-progress">Em progresso</option>
@@ -69,17 +73,17 @@
                                 </select>
                             </div>
                             <div class="col-md-12 mb-3">
-                                <input type="number" value="1" readonly="readonly" name="index" id="indexParentInput" class="form-control main-bg-gray text-white main-input mb-3">
+                                <input type="hidden" value="1" readonly="readonly" name="index" id="indexParentInput" class="form-control main-bg-gray text-white main-input mb-3">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-12 main-bg-deep py-3 d-flex justify-content-between align-itens-center">
                                 <div>
-                                    <button type="button" id="deleteTask" class="main-btn main-text-danger bg-transparent mr-3" data-dismiss="modal">Apagar tarefa</button>
+                                    <button type="button" id="deleteTask" class="main-btn main-text-danger bg-transparent mr-3 font-weight-bold" data-dismiss="modal">Apagar tarefa</button>
                                 </div>
                                 <div class="d-flex justify-content-end align-itens-center">
                                     <button type="button" class="main-btn main-rounded text-white main-bg-danger mr-3" data-dismiss="modal">Fechar</button>
-                                    <button type="submit" class="main-btn main-rounded text-white main-bg-success" id="taskSubmit">Salvar</button>
+                                    <button type="submit" class="main-btn main-rounded text-white main-bg-success" id="taskSubmit">Salvar tarefa</button>
                                 </div>
                             </div>
                         </div>

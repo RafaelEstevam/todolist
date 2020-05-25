@@ -1,6 +1,5 @@
 import api from '../services/api.js'
 import csvUtils from './utils/csvUtils.js'
-// import csvController from './controllers/csvController.js'
 
 $(document).ready(function(){
     var historyWrapper = $("#historyWrapper");
@@ -15,6 +14,9 @@ $(document).ready(function(){
     var parentTaskSelect = $("#parentTaskSelect");
     var indexParentInput = $("#indexParentInput");
     var deleteTask = $("#deleteTask");
+    var addTaskButton = $("#addTaskButton");
+    var totalPoints = $("#totalPoints");
+    var scoreTask = $("#scoreTask");
     var parentTaskList = [];
     var mainTasks = [];
     var tasks = {};
@@ -57,6 +59,11 @@ $(document).ready(function(){
         destroy($(idInput).val())
     })
 
+    $(addTaskButton).on("click", function(){
+        $("#addTask").modal("show");
+        restoreDataModal();
+    })
+
     function generateOptions(){
         parentTaskList.forEach(function(item){
             $(parentTaskSelect).append('<option data-index="'+item.index+'" value="' + item.id + '">'+item.name+'</option>')
@@ -76,13 +83,26 @@ $(document).ready(function(){
         })
     }
 
+    function restoreDataModal(){
+        $(totalPoints).text("");
+        $(scoreTask).text("");
+        $(idInput).val("");
+        $(nameInput).val("");
+        $(scoreInput).val("");
+        $(statusSelect).val("");
+        $(parentTaskSelect).val("0");
+        $(indexParentInput).val("1");
+    }
+
     function setDataModal(task){
-        $(idInput).val(task.id)
-        $(nameInput).val(task.name)
-        $(scoreInput).val(task.score)
-        $(statusSelect).val(task.status)
-        $(parentTaskSelect).val(task.parentTaskId)
-        $(indexParentInput).val(task.index)
+        $(totalPoints).text(task.totalScore);
+        $(scoreTask).text(task.score);
+        $(idInput).val(task.id);
+        $(nameInput).val(task.name);
+        $(scoreInput).val(task.score);
+        $(statusSelect).val(task.status);
+        $(parentTaskSelect).val(task.parentTaskId);
+        $(indexParentInput).val(task.index);
     }
 
     function generateSelectParentOption(taskList){
@@ -100,6 +120,8 @@ $(document).ready(function(){
     }
 
     function appendItem(parent, item){
+        var addDropdownButton = '<button class="ml-3 main-circle main-btn bg-transparent text-white main-dropdown" ><i class="fa fa-chevron-down"></i></button>'
+        addDropdownButton = item.subtask.length > 0 ? addDropdownButton : '<button style="cursor: default;" class="ml-3 main-circle main-btn bg-transparent text-white main-dropdown" ><i class="fa fa-chevron-down main-text-gray"></i></button>'
         $(parent).append(
             '<ul data-index="' + item.index +'" id="'+item.id+'" class="main-tasks main-rounded">' +
                 '<li class="main-task-item main-rounded main-bg-gray "' +
@@ -107,18 +129,19 @@ $(document).ready(function(){
                     '" data-score="'+item.score +
                     '" data-total-score="'+ item.totalScore +'">' + 
                         '<span class="main-task-status main-rounded '+ item.status +'">' + item.name + '</span>' +
-                        '<div class="main-task-info d-flex align-items-center"><span class="font-weight-bold text-white">Pontuação: </span><span class="ml-3 main-circle main-bg-deep main-task-label">' + item.score + '</span></div>' +
-                        '<div class="main-task-info d-flex align-items-center"><span class="font-weight-bold text-white">Pontuação total: </span><span class="ml-3 main-circle main-bg-deep main-task-label">' + item.totalScore + '</span></div>' +
-                        '<div class="main-task-info d-flex align-items-center"><span class="font-weight-bold text-white">Subtaretas: </span><span class="ml-3 main-circle main-bg-deep main-task-label">' + item.subtask.length + '</span></div>' +
-                        '<div><button title="Ver tarefa" data-id="'+item.id+'" class="ml-3 main-circle main-btn main-bg-deep text-white edit" ><i class="fa fa-bars"></i></button></div>' +
+                        '<div class="d-flex justify-content-center align-items-center">'+
+                            '<button title="Ver tarefa" data-id="'+item.id+'" class="ml-3 main-circle main-btn main-bg-deep text-white edit" ><i class="fa fa-pencil"></i></button>' +
+                            addDropdownButton + 
+                        '</div>' +
                 '</li>' +
             '</ul>')
     }
 
     function addEventMainTask(mainTasks){
         $(mainTasks).each(function(){
-            $($(this).children()[0]).on("click", function(){
-                $(this).parent().toggleClass("active");
+            var itemTask = $($(this).children()[0]);
+            $($(this).children()[0]).find(".main-dropdown").on("click", function(){
+                $(itemTask).parent().toggleClass("active");
             })
         })
     }
@@ -158,9 +181,7 @@ $(document).ready(function(){
         $(indexParentInput).val(1);
     }
     
-    function init(){
-        show();
-    }
+    function init(){show();}
 
     function store(data){
         $.ajax({
