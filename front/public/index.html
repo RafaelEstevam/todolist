@@ -5,6 +5,7 @@
         <title></title>
         <link rel="stylesheet" href="assets/css/bootstrap.css" />
         <link rel="stylesheet" href="assets/css/main.css" />
+        <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.css" />
     </head>
     <body>
         <div class="interface">
@@ -16,8 +17,9 @@
                 <div class="interface-wrapper-tools">
                     <div class="main">
                         <div class="interface-wrapper-tools-buttons">
-                            <button class="main-circle main-btn main-bg-dark text-white mr-3" id="import">I</button>
-                            <button class="main-circle main-btn main-bg-primary text-white" type="button" data-toggle="modal" data-target="#addTask">Add Tasks</button>
+                            <button class="main-circle main-btn main-bg-dark text-white mr-3" title="Importar" id="import" data-toggle="modal" data-target="#importTasks"><i class="fa fa-upload"></i></button>
+                            <a href="http://127.0.0.1:5000/csv/export" target="_blank"  title="Exportar" class="main-circle main-btn main-bg-danger text-white mr-3"><i class="fa fa-download"></i></a>
+                            <button class="main-circle main-btn main-bg-primary text-white" type="button" data-toggle="modal" data-target="#addTask"><i class="fa fa-check mr-3"></i> Add Tasks</button>
                         </div>
                     </div>
                 </div>
@@ -40,10 +42,10 @@
                                 <h2 id="modalTitle" class="font-weight-light text-white">Crie uma tarefa</h2>
                             </div>
                             <div class="col-12 text-white">
-                                <input type="text" id="idInput" name="id" class="form-control main-bg-gray text-white main-input mb-3">
+                                <input type="text" placeholder="ID da tarefa" id="idInput" readonly="readonly" name="id" class="form-control main-bg-gray text-white main-input mb-3">
                             </div>
                             <div class="col-12 text-white">
-                                <input type="text" id="nameInput" name="name" class="form-control main-bg-gray text-white main-input mb-3">
+                                <input type="text" id="nameInput" placeholder="Nome da tarefa" name="name" class="form-control main-bg-gray text-white main-input mb-3">
                             </div>
                             <div class="col-12 text-white">
                                 <div class="row">
@@ -63,7 +65,7 @@
                             </div>
                             <div class="col-12 text-white">
                                 <select class="form-control main-bg-gray text-white main-input mb-3" id="parentTaskSelect" name="parentTaskId">
-                                    <option data-index="0" value="0">Selecione uma tarefa pai</option>
+                                    <option data-index="0" value="0">Tarefa principal</option>
                                 </select>
                             </div>
                             <div class="col-md-12 mb-3">
@@ -79,6 +81,29 @@
                                     <button type="button" class="main-btn main-rounded text-white main-bg-danger mr-3" data-dismiss="modal">Fechar</button>
                                     <button type="submit" class="main-btn main-rounded text-white main-bg-success" id="taskSubmit">Salvar</button>
                                 </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="importTasks" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content main-bg-dark">
+                    <form class="container-fluid mb-0" id="formImportTask">
+                        <div class="row">
+                            <div class="col-12 text-center text-white py-3">
+                                <h2 id="modalTitle" class="font-weight-light text-white">Importar tarefas</h2>
+                            </div>
+                            <div class="col-12 text-white">
+                                <input type="file" id="importTasksInput" name="id" class="form-control main-bg-gray text-white main-input mb-3">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 main-bg-deep py-3 d-flex justify-content-between align-itens-center">
+                                <button type="button" class="main-btn main-rounded text-white main-bg-danger mr-3" data-dismiss="modal">Fechar</button>
+                                <button type="submit" class="main-btn main-rounded text-white main-bg-success" id="taskSubmit">Importar</button>
                             </div>
                         </div>
                     </form>

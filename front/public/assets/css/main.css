@@ -11,6 +11,10 @@ ul, li{
     list-style: none;
 }
 
+a:hover{
+    text-decoration: none;
+}
+
 .main-text-primary{color: #5853c3 !important}
 .main-text-success{color: #72c47b !important}
 .main-text-warning{color: #ca9251 !important}
@@ -28,6 +32,9 @@ ul, li{
 .main-bg-deep{background-color: #2e2c33 !important}
 .main-bg-gray{background-color: #47434e !important}
 .main-btn{border: 0px; display: flex; justify-content: center; align-items: center;height: 40px; padding: 0px 15px}
+.main-btn:hover{
+    box-shadow: 0px 0px 6px rgba(0,0,0,0.8);
+}
 .main-rounded{border-radius: 3px;}
 .main-circle{border-radius: 1000px;}
 .main{max-width: 95%;margin: 0 auto;}
@@ -80,9 +87,9 @@ ul, li{
     transition: linear all 0.1s;
 }
 
-.main-task-item:hover .main-task-info{
-    opacity: 1;
-}
+.main-task-info span:first-child{font-size: 10px;}
+
+.main-task-item:hover .main-task-info{opacity: 1;}
 
 .main-tasks .main-tasks .main-task-item .main-task-status{
     padding: 15px 15px;

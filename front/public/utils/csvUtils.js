@@ -8,24 +8,27 @@ export default {
                 var itemTask = item.split(",");
                 var csvTask = {
                     id: parseInt(itemTask[0]),
-                    name: itemTask[1],
-                    score: parseInt(itemTask[2]),
-                    parentTaskId: parseInt(itemTask[3]),
+                    index: parseInt(itemTask[1]),
+                    name: itemTask[2],
+                    score: parseInt(itemTask[3]),
+                    parentTaskId: parseInt(itemTask[4]),
+                    totalScore: parseInt(itemTask[5]),
+                    status: itemTask[6],
                     subtask: [],
-                    totalScore: 0,
                 }
-                 csv_tasks_merged.push(csvTask);
+                csv_tasks_merged.push(csvTask);
             }
         })
 
         return csv_tasks_merged.sort(function(a, b) {
-            return a.parentTaskId - b.parentTaskId;
+            return a.index - b.index;
         });
     },
 
-    csvImport: function (){
+    csvImport: function (input){
+
         csv_tasks = [];
-        var csv_file = $("#csv_file");
+        var csv_file = input;
         var reader = new FileReader();
         function read() {
             var csv = $(csv_file).prop('files')[0];

@@ -1,13 +1,10 @@
 import api from '../services/api.js'
-import csvUtils from './utils/csvUtils.js'
-// import csvController from './controllers/csvController.js'
 
 $(document).ready(function(){
     var historyWrapper = $("#historyWrapper");
     var btnImport = $("#import");
     var formTask = $("#formTask");
     var formImportTask = $("#formImportTask");
-    var importTasksInput = $("#importTasksInput");
     var idInput = $("#idInput");
     var nameInput = $("#nameInput");
     var scoreInput = $("#scoreInput");
@@ -41,16 +38,8 @@ $(document).ready(function(){
         }
     })
 
-    $(importTasksInput).on("change", function(){
-        csvUtils.csvImport(importTasksInput);
-    })
-
     $(formImportTask).on("submit", function(e){
         e.preventDefault();
-        var csvList = csvUtils.csvSave();
-        importTasks(csvList);
-        destroyDashboard();
-        init();
     })
 
     $(deleteTask).on("click", function(){
@@ -110,7 +99,7 @@ $(document).ready(function(){
                         '<div class="main-task-info d-flex align-items-center"><span class="font-weight-bold text-white">Pontuação: </span><span class="ml-3 main-circle main-bg-deep main-task-label">' + item.score + '</span></div>' +
                         '<div class="main-task-info d-flex align-items-center"><span class="font-weight-bold text-white">Pontuação total: </span><span class="ml-3 main-circle main-bg-deep main-task-label">' + item.totalScore + '</span></div>' +
                         '<div class="main-task-info d-flex align-items-center"><span class="font-weight-bold text-white">Subtaretas: </span><span class="ml-3 main-circle main-bg-deep main-task-label">' + item.subtask.length + '</span></div>' +
-                        '<div><button title="Ver tarefa" data-id="'+item.id+'" class="ml-3 main-circle main-btn main-bg-deep text-white edit" ><i class="fa fa-bars"></i></button></div>' +
+                        '<div><button data-id="'+item.id+'" class="main-circle main-btn main-bg-deep text-white edit" >Editar</button></div>' +
                 '</li>' +
             '</ul>')
     }
@@ -154,7 +143,7 @@ $(document).ready(function(){
         parentTaskList = [];
         $(historyWrapper).children().remove()
         $(parentTaskSelect).children().remove()
-        $(parentTaskSelect).append('<option data-index="0" value="0">Tarefa principal</option>');
+        $(parentTaskSelect).append('<option data-index="0" value="0">Selecione uma tarefa pai</option>');
         $(indexParentInput).val(1);
     }
     
@@ -221,21 +210,6 @@ $(document).ready(function(){
             contentType: "application/json; charset=utf-8",
         }).then((res) =>{
             setDataModal(res.task[0]);
-        })
-    }
-
-    function importTasks(tasks){
-        var taskList = {
-            tasks: tasks
-        }
-        taskList = JSON.stringify(taskList);
-        $.ajax({
-            type: "POST",
-            url: api + "/csv/import",
-            contentType: "application/json; charset=utf-8", // permite requisições que enviam dados do tipo json
-            data: taskList
-        }).then(function (res){
-            console.log(res);
         })
     }
 
