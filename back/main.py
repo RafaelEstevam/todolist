@@ -57,10 +57,10 @@ def deleteTaskInCSV(taskId):
 def updateTaskInCSV(taskId):
     return csvUtils.editTaskAndProcessCSV(taskId, request)
 
-@app.route("/sprints", methods=['POST'])
-@cross_origin()
-def calcSprint():
-    return sprintUtils.calculateSprints(request)
+# @app.route("/sprints", methods=['POST'])
+# @cross_origin()
+# def calcSprint():
+#     return sprintUtils.calculateSprints(request)
 
 if __name__ == "__main__":
     app.run()

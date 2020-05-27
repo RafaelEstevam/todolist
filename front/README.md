@@ -9,7 +9,6 @@ Após isso, na raiz do projeto front rodar o comando:
 npm install
 
 ```
-
 Para iniciar o front, na raiz do projeto front, no terminal rodar o comando:
 
 ```

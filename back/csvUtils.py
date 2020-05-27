@@ -4,8 +4,8 @@ import json
 mergedTasks = []
 
 def generateTask(task, converter):
-    # - task(Objeto) = Objeto com chaves e valores referentes a uma task
-    # - converter(Booleano) = Se verdadeiro, converter alguns dados do objeto e devolver objeto, senão devolve somente o objeto
+    # - task(object) = Objeto com chaves e valores referentes a uma tarefa
+    # - converter(Boolean) = Se verdadeiro, converter alguns dados do objeto e devolver objeto, senão devolve somente o objeto
     if converter == True :
         return {
                 "id" : int(task[0]),
@@ -30,7 +30,7 @@ def generateTask(task, converter):
             }
 
 def writeTaskOfArray(taskList):
-    # - taskList(Vetor) = Lista de tarefas para ser armazenada no CSV
+    # - taskList(array) = Lista de tarefas para ser armazenada no CSV
 
     file = csv.writer(open("csvs/newfile.csv", "w", newline=''))
     file.writerow(["id", "index", "name", "parentTaskId", "score", "totalScore", "status", "subtask"])
@@ -48,9 +48,9 @@ def writeTaskOfArray(taskList):
         
 
 def searchParentTask(task, taskList):
-    # Enquando não encontrar a task pai ele continua procurando dentro da árvore de tasks, passando como ponto inicial o array de subtask do pai.
-    # - task(Objeto) = task 'pai'
-    # - taskList(Vetor) = lista de subtasks da task pai
+    # Enquando não encontrar a tarefa pai ele continua procurando dentro da árvore de tarefas, passando como ponto inicial o array de subtask do pai.
+    # - task(object) = tarefa 'pai'
+    # - taskList(array) = lista de subtarefas da tarefa pai
 
     for item in taskList:
         if item['id'] == task['parentTaskId'] :
@@ -59,9 +59,9 @@ def searchParentTask(task, taskList):
             searchParentTask(task, item['subtask'])
 
 def addTasks(tasks):
-    # Organizar em forma de "árvore" as tasks vindas pelo json. Essa organização usa o id da task pai como referência para adicionar as tasks filhas
+    # Organizar em forma de "árvore" as tarefas vindas pelo json. Essa organização usa o id da tarefas pai como referência para adicionar as tarefas filhas
     # Essa função retorna a lista de tarefas organizada
-    # - tasks(Objeto) = Objeto com lista de tasks à ser processada
+    # - tasks(object) = Objeto com lista de tarefas à ser processada
     mergedTasks = []
     for task in tasks['tasks']:
         if task['index'] == 1:
@@ -71,15 +71,15 @@ def addTasks(tasks):
     return mergedTasks
 
 def incrementTotalPoints(task, taskList) :
-    # - task(Objeto) = task 'pai'
-    # - taskList(Vetor) = lista de subtasks da task pai
+    # - task(object) = tarefa 'pai'
+    # - taskList(array) = lista de subtarefas da tarefa pai
 
     for item in taskList :
         if len(item['subtask']) > 0:
             item['totalScore'] = item['score']
         incrementTotalPoints(item, item['subtask'])
-        # Se meu item tiver um totalscore maior que 0, essa pontuação vai ser somada a pontuação total da task pai, senão o score do item vai ser somado
-        # ao total da task pai
+        # Se meu item tiver um totalscore maior que 0, essa pontuação vai ser somada a pontuação total da tarefa pai, senão o score do item vai ser somado
+        # ao total da tarefa pai
         if item['totalScore'] > 0:
             task['totalScore'] += item['totalScore']
         else:
@@ -88,12 +88,12 @@ def incrementTotalPoints(task, taskList) :
 def calcScoreTasks(mergedTasks) :
     # Se a tarefa tiver subtarefas, calcular a somatória de pontos das subtarefas, senão será atribuido a pontuação total da tarefa o score inicial dela
     # Essa função vai retornar a lista com seus devidos valores de pontuação da tarefa atribuidos
-    # - mergedTasks(Vetor) = lista de tarefas já organizada na árvore de tarefas
+    # - mergedTasks(array) = lista de tarefas já organizada na árvore de tarefas
 
     for item in mergedTasks:
         if len(item['subtask']) > 0 :
             item['totalScore'] += item['score'] + item['totalScore']
-            # Calcular a soma da pontuação das subtask
+            # Calcular a soma da pontuação das subtarefa
             incrementTotalPoints(item, item['subtask'])
         else:
             item['totalScore'] = item['score']
@@ -112,7 +112,7 @@ def processCSV(request):
 
 def processJSON(taskList):
     # Processamento do json das tasks. Retorna um JSON com a lista de tasks organizadas
-    # - taskList(Objeto) = Objeto com lista de tarefas para ser processada e gerar o JSON - Estrutura esperada : {"tasks" : taskList(array)}
+    # - taskList(object) = Objeto com lista de tarefas para ser processada e gerar o JSON - Estrutura esperada : {"tasks" : taskList(array)}
     taskList["tasks"].sort(key=lambda item: item.get('index') )
 
     taskList = {
@@ -125,7 +125,7 @@ def processJSON(taskList):
     return taskList
 
 def deleteTaskAndProcessCSV(taskId):
-    # - taskId = ID da task que será apagada. 
+    # - taskId = ID da tarefa que será apagada. 
 
     newTaskList = []
     r = csv.reader(open("csvs/newfile.csv"))
@@ -167,7 +167,7 @@ def createTaskInCSV(request):
     return processJSON(newTaskList)
 
 def editTaskAndProcessCSV(taskId, request):
-    # - taskId(int) = ID da task que será apagada
+    # - taskId(int) = ID da tarefa que será apagada
     # - request = Biblioteca request importada no main.py
 
     json_data = request.get_json()
