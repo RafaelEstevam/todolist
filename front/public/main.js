@@ -1,30 +1,49 @@
-import api from '../services/api.js'
+
+// TO DO APP
+// Descrição: Frontend de aplicação para criação/gestão de uma lista de tarefas com armazenamento em arquivo .CSV
+// Objetivo: Fornecer uma interface simples para gestão de tarefas importadas no CSV.
+// Bibliotecas usadas:
+//       JQUERY - Bilioteca para manipulação de DOM HTML
+//       Bootstrap - Bilioteca para estrutura HTML responsiva
+// Criador: Rafael Estevam de Oliveira
+
+
+import api from './utils/api.js'
 import csvUtils from './utils/csvUtils.js'
+import taskUtils from './utils/taskUtils.js'
 
 $(document).ready(function(){
-    var historyWrapper = $("#historyWrapper");
-    var btnImport = $("#import");
-    var formTask = $("#formTask");
-    var formImportTask = $("#formImportTask");
-    var importTasksInput = $("#importTasksInput");
-    var idInput = $("#idInput");
-    var nameInput = $("#nameInput");
-    var scoreInput = $("#scoreInput");
-    var statusSelect = $("#statusSelect");
-    var parentTaskSelect = $("#parentTaskSelect");
-    var indexParentInput = $("#indexParentInput");
-    var deleteTask = $("#deleteTask");
-    var addTaskButton = $("#addTaskButton");
-    var totalPoints = $("#totalPoints");
-    var scoreTask = $("#scoreTask");
+
+    /**
+     * Variáveis
+     */
+
+    var historyWrapper = $("#historyWrapper"); //TAG HTML
+    var formTask = $("#formTask"); //TAG HTML
+    var formImportTask = $("#formImportTask"); //TAG HTTML
+    var importTasksInput = $("#importTasksInput"); //TAG HTTML
+    var idInput = $("#idInput"); //TAG HTTML
+    var nameInput = $("#nameInput"); //TAG HTTML
+    var scoreInput = $("#scoreInput"); //TAG HTTML
+    var statusSelect = $("#statusSelect"); //TAG HTTML
+    var parentTaskSelect = $("#parentTaskSelect"); //TAG HTTML
+    var indexParentInput = $("#indexParentInput"); //TAG HTTML
+    var deleteTask = $("#deleteTask"); //TAG HTTML
+    var addTaskButton = $("#addTaskButton"); //TAG HTTML
+    var totalPoints = $("#totalPoints"); //TAG HTTML
+    var scoreTask = $("#scoreTask"); //TAG HTTML
     var parentTaskList = [];
-    var mainTasks = [];
     var tasks = {};
     
     $(formTask).on("submit", function(e){
+
+        /** Submissão dos dados do formulário em JSON
+         * e(object) - Elemento atual que recebe o evento
+         */
+
         e.preventDefault();
         var taskId = $(idInput).val() == "" ? "" : parseInt($(idInput).val())
-        var taskItem = {
+        var taskItem = { // formatação dos dados para a estrutura esperada pelo BACKEND
             "id": taskId,
             "index": parseInt($("input[name='index']").val()),
             "name": $("input[name='name']").val(),
@@ -37,17 +56,25 @@ $(document).ready(function(){
 
         tasks = {"tasks":[taskItem]};
         if(taskId == ""){
-            store(tasks);
+            store(tasks); // Quando for uma nova tarefa sem ID
         }else{
-            update(tasks, taskId);
+            update(tasks, taskId);  // Quando for uma tarefa com ID
         }
     })
 
     $(importTasksInput).on("change", function(){
+        /**
+         * Inicializa a importação do CSV
+         */
+
         csvUtils.csvImport(importTasksInput);
     })
 
     $(formImportTask).on("submit", function(e){
+        /** Submissão do CSV para processamento e importação
+         * e(object) - Elemento atual que recebe o evento
+         */
+
         e.preventDefault();
         var csvList = csvUtils.csvSave();
         importTasks(csvList);
@@ -56,56 +83,28 @@ $(document).ready(function(){
     })
 
     $(deleteTask).on("click", function(){
+        /** 
+         * Apaga a tarefa de acordo com o ID
+         */
+
         destroy($(idInput).val())
     })
 
     $(addTaskButton).on("click", function(){
+        /** 
+         * Adiciona nova tarefa
+         */
+
         $("#addTask").modal("show");
-        restoreDataModal();
+        taskUtils.restoreDataModal(totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
     })
 
-    function generateOptions(){
-        parentTaskList.forEach(function(item){
-            $(parentTaskSelect).append('<option data-index="'+item.index+'" value="' + item.id + '">'+item.name+'</option>')
-        })
-        $(parentTaskSelect).on("change", function(){
-            $(indexParentInput).removeAttr('min')
-            $(indexParentInput).val($(this).children("option:selected").data('index') + 1)
-        })
-    }
-
-    function setEditFunction(){
-        $(".edit").each(function(){
-            $(this).on("click", function(){
-                $("#addTask").modal("show");
-                index($(this).data("id"));
-            })
-        })
-    }
-
-    function restoreDataModal(){
-        $(totalPoints).text("");
-        $(scoreTask).text("");
-        $(idInput).val("");
-        $(nameInput).val("");
-        $(scoreInput).val("");
-        $(statusSelect).val("");
-        $(parentTaskSelect).val("0");
-        $(indexParentInput).val("1");
-    }
-
-    function setDataModal(task){
-        $(totalPoints).text(task.totalScore);
-        $(scoreTask).text(task.score);
-        $(idInput).val(task.id);
-        $(nameInput).val(task.name);
-        $(scoreInput).val(task.score);
-        $(statusSelect).val(task.status);
-        $(parentTaskSelect).val(task.parentTaskId);
-        $(indexParentInput).val(task.index);
-    }
-
     function generateSelectParentOption(taskList){
+
+        /** 
+         * Lê todas as listas de tarefas e subtarefas e adiciona a um novo array para ordená-la pelo id
+         */
+
         taskList.forEach(function(item){
             if(item.subtask.length > 0){
                 parentTaskList.push(item);
@@ -119,71 +118,49 @@ $(document).ready(function(){
         })
     }
 
-    function appendItem(parent, item){
-        var addDropdownButton = '<button class="ml-3 main-circle main-btn bg-transparent text-white main-dropdown" ><i class="fa fa-chevron-down"></i></button>'
-        addDropdownButton = item.subtask.length > 0 ? addDropdownButton : '<button style="cursor: default;" class="ml-3 main-circle main-btn bg-transparent text-white main-dropdown" ><i class="fa fa-chevron-down main-text-gray"></i></button>'
-        $(parent).append(
-            '<ul data-index="' + item.index +'" id="'+item.id+'" class="main-tasks main-rounded">' +
-                '<li class="main-task-item main-rounded main-bg-gray "' +
-                    '" data-id="'+item.id +
-                    '" data-score="'+item.score +
-                    '" data-total-score="'+ item.totalScore +'">' + 
-                        '<span class="main-task-status main-rounded '+ item.status +'">' + item.name + '</span>' +
-                        '<div class="d-flex justify-content-center align-items-center">'+
-                            '<button title="Ver tarefa" data-id="'+item.id+'" class="ml-3 main-circle main-btn main-bg-deep text-white edit" ><i class="fa fa-pencil"></i></button>' +
-                            addDropdownButton + 
-                        '</div>' +
-                '</li>' +
-            '</ul>')
-    }
-
-    function addEventMainTask(mainTasks){
-        $(mainTasks).each(function(){
-            var itemTask = $($(this).children()[0]);
-            $($(this).children()[0]).find(".main-dropdown").on("click", function(){
-                $(itemTask).parent().toggleClass("active");
-            })
-        })
-    }
-
-    function generateSubtaskList(task, taskList){
-        var thisTask = $("#" + task.id)
-        taskList.forEach(function(item){
-            if(item.parentTaskId == task.id){
-                if(item.subtask.length > 0){
-                    appendItem($(thisTask), item)
-                    generateSubtaskList(item, item.subtask);
-                }else{
-                    appendItem($(thisTask), item)
-                }
-            }
-        })
-    }
-
-    function generateList(taskList){
-        taskList.tasks.forEach(function(task){
-            if(task.index == 1){
-                appendItem($(historyWrapper), task)
-            }
-            if(task.subtask.length > 0){
-                generateSubtaskList(task, task.subtask);
-            }
-        })
-        mainTasks = $('ul.main-tasks');
-        addEventMainTask($(mainTasks));
-    }
-
     function destroyDashboard(){
+
+        /**
+         * Remove os dados atuais da interface
+         */
+
         parentTaskList = [];
         $(historyWrapper).children().remove()
         $(parentTaskSelect).children().remove()
         $(parentTaskSelect).append('<option data-index="0" value="0">Tarefa principal</option>');
         $(indexParentInput).val(1);
     }
+
+    function setEditFunction(){
+
+        /**
+         * Remove os dados atuais da interface
+         */
+
+        $(".edit").each(function(){
+            $(this).on("click", function(){
+                $("#addTask").modal("show");
+                index($(this).data("id"));
+            })
+        })
+    }
     
-    function init(){show();}
+    function init(){
+
+        /**
+         *  Inicializa a inteface e faz a busca da tarefa no BACKEND
+         */
+
+        show();
+    }
 
     function store(data){
+
+        /**
+         * Cria uma nova tarefa
+         * data - Dados da tarefa
+         */
+
         $.ajax({
             type: "POST",
             url: api + "tasks/new",
@@ -197,21 +174,32 @@ $(document).ready(function(){
     }
     
     function show(){
+        /**
+         * Busca todas as tarefas no backend
+         */
+
         $.ajax({
             type: "GET",
             url: api + "tasks",
             async: false,
             contentType: "application/json; charset=utf-8",
         }).then(function (res){
-            generateList(JSON.parse(res));
+            taskUtils.generateList(JSON.parse(res));
             generateSelectParentOption(JSON.parse(res).tasks);
         }).then(function(){
-            generateOptions();
+            taskUtils.generateOptions(parentTaskList);
             setEditFunction();
         })
     }
     
     function update (task, task_id){
+        
+        /**
+         * Edita uma tarefa
+         * task - Dados da tarefa
+         * id - Id da tarefa
+         */
+        
         $.ajax({
             type: "PUT",
             url: api + "tasks/" + task_id,
@@ -225,6 +213,12 @@ $(document).ready(function(){
     }
     
     function destroy(task_id){
+
+        /**
+         * Apaga uma tarefa de acordo com o ID
+         * id - Id da tarefa
+         */
+
         $.ajax({
             type: "DELETE",
             url: api + "tasks/" + task_id,
@@ -236,24 +230,37 @@ $(document).ready(function(){
     }
     
     function index(task_id){
+
+        /**
+         * Consulta uma tarefa de acordo com o ID
+         * task_id - Id da tarefa
+         */
+
         $.ajax({
             type: "GET",
             url: api + "tasks/" + task_id,
             contentType: "application/json; charset=utf-8",
         }).then((res) =>{
-            setDataModal(res.task[0]);
+            taskUtils.setDataModal(res.task[0], totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
         })
     }
 
     function importTasks(tasks){
+
+        /**
+         * Recebe uma lista de tarefas para salvar no BACKEND. Essa lista é passada dentro de um objeto e transformada em JSON.
+         * tasks(array) - lista de tarefas 
+         */
+
         var taskList = {
             tasks: tasks
         }
+
         taskList = JSON.stringify(taskList);
         $.ajax({
             type: "POST",
             url: api + "/csv/import",
-            contentType: "application/json; charset=utf-8", // permite requisições que enviam dados do tipo json
+            contentType: "application/json; charset=utf-8",
             data: taskList
         }).then(function (res){
             console.log(res);

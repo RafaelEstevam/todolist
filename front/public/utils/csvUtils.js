@@ -1,17 +1,22 @@
 var csv_tasks = [];
 
 export default {
-    csvSave: function(){ // processa os ítens do csv e adiciona num array ordenado a partir do parentTaskId
+    csvSave: function(){
+
+        /**
+         *  Processa os ítens do csv e adiciona num array ordenado a partir do parentTaskId
+         */
+
         var csv_tasks_merged = [];
         csv_tasks.forEach( function(item, index){
-            if(index > 0){
+            if(index > 0 && typeof item == "string"){
                 var itemTask = item.split(",");
                 var csvTask = {
                     id: parseInt(itemTask[0]),
                     index: parseInt(itemTask[1]),
                     name: itemTask[2],
-                    score: parseInt(itemTask[3]),
-                    parentTaskId: parseInt(itemTask[4]),
+                    parentTaskId: parseInt(itemTask[3]),
+                    score: parseInt(itemTask[4]),
                     totalScore: parseInt(itemTask[5]),
                     status: itemTask[6],
                     subtask: [],
@@ -27,6 +32,10 @@ export default {
 
     csvImport: function (input){
 
+        /** Processamento de importação de CSV
+         *  input(object) - Campo que recebe o arquivo para upload
+         */
+
         csv_tasks = [];
         var csv_file = input;
         var reader = new FileReader();
@@ -34,6 +43,7 @@ export default {
             var csv = $(csv_file).prop('files')[0];
             reader.readAsText(csv)
         }
+        
         reader.onload = function(){
             reader.result.split("\n").forEach(function (item, index){
                 if(item.length == 0){
@@ -42,6 +52,7 @@ export default {
                 csv_tasks.push(item);
             })
         }
+
         read();
     },
 
