@@ -6,6 +6,9 @@ mergedTasks = []
 def generateTask(task, converter):
     # - task(object) = Objeto com chaves e valores referentes a uma tarefa
     # - converter(Boolean) = Se verdadeiro, converter alguns dados do objeto e devolver objeto, senão devolve somente o objeto
+    
+    # Retorna a estrutura base de uma task
+    
     if converter == True :
         return {
                 "id" : int(task[0]),
@@ -30,6 +33,7 @@ def generateTask(task, converter):
             }
 
 def writeTaskOfArray(taskList):
+    # Salva a lista de tarefas no csv.
     # - taskList(array) = Lista de tarefas para ser armazenada no CSV
 
     file = csv.writer(open("csvs/newfile.csv", "w", newline=''))
@@ -62,6 +66,8 @@ def addTasks(tasks):
     # Organizar em forma de "árvore" as tarefas vindas pelo json. Essa organização usa o id da tarefas pai como referência para adicionar as tarefas filhas
     # Essa função retorna a lista de tarefas organizada
     # - tasks(object) = Objeto com lista de tarefas à ser processada
+    # Retorna a lista de tarefas estruturada no vetor
+
     mergedTasks = []
     for task in tasks['tasks']:
         if task['index'] == 1:
@@ -89,6 +95,7 @@ def calcScoreTasks(mergedTasks) :
     # Se a tarefa tiver subtarefas, calcular a somatória de pontos das subtarefas, senão será atribuido a pontuação total da tarefa o score inicial dela
     # Essa função vai retornar a lista com seus devidos valores de pontuação da tarefa atribuidos
     # - mergedTasks(array) = lista de tarefas já organizada na árvore de tarefas
+    # Retorna a lista de tarefas com pontos totais da tarefa calculados
 
     for item in mergedTasks:
         if len(item['subtask']) > 0 :
@@ -103,8 +110,8 @@ def calcScoreTasks(mergedTasks) :
 def processCSV(request):
     # Processamento do json vindo na submição do formulário do front
     # Salvamento em arquivo CSV da lista 'simples' de tarefas
-    # Retorno da requisição com as tarefas organizadas e pontuadas
     # - request = biblioteca importada no arquivo main.py
+    # Retorna um JSON com a estrutura de tarefas e subtarefas organizada
 
     json_data = request.get_json()
     writeTaskOfArray(json_data['tasks'])
@@ -113,6 +120,8 @@ def processCSV(request):
 def processJSON(taskList):
     # Processamento do json das tasks. Retorna um JSON com a lista de tasks organizadas
     # - taskList(object) = Objeto com lista de tarefas para ser processada e gerar o JSON - Estrutura esperada : {"tasks" : taskList(array)}
+    # Retorna um JSON com a estrutura de tarefas e subtarefas organizada
+
     taskList["tasks"].sort(key=lambda item: item.get('index') )
 
     taskList = {
@@ -126,6 +135,7 @@ def processJSON(taskList):
 
 def deleteTaskAndProcessCSV(taskId):
     # - taskId = ID da tarefa que será apagada. 
+    # Retorna uma mensagem para a requisição
 
     newTaskList = []
     r = csv.reader(open("csvs/newfile.csv"))
@@ -138,11 +148,12 @@ def deleteTaskAndProcessCSV(taskId):
     writeTaskOfArray(newTaskList)
     newTaskList = {"tasks" : newTaskList}
     processJSON(newTaskList)
-    return 'test'
+    return 'Tarefa deletada'
         
 def createTaskInCSV(request):
     # - request = Biblioteca request importada no main.py
-
+    # Retorna um JSON com a estrutura de tarefas e subtarefas organizada e com a adição da nova tarefa
+    
     json_data = request.get_json()
     newTaskList = []
     newId = 0
@@ -169,6 +180,7 @@ def createTaskInCSV(request):
 def editTaskAndProcessCSV(taskId, request):
     # - taskId(int) = ID da tarefa que será apagada
     # - request = Biblioteca request importada no main.py
+    # Retorna um JSON com a estrutura de tarefas e subtarefas organizada e com a tarefa editada
 
     json_data = request.get_json()
     newTaskList = []
