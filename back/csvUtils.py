@@ -130,6 +130,7 @@ def deleteTaskAndProcessCSV(taskId):
     newTaskList = []
     r = csv.reader(open("csvs/newfile.csv"))
     for task in r :
+        print(task)
         if task[0] != taskId and task[0] != 'id' and task[3] != taskId:
             task = generateTask(task, True)
             newTaskList.append(task)
