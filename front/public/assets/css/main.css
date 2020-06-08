@@ -100,6 +100,33 @@ a:hover{
 .main-task-item .main-task-status.done{border-left: 5px solid #72c47b;}
 .main-task-item .main-task-status.blocked{border-left: 5px solid #b34a61;}
 
+.main-task-item .main-task-status::before{
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-right: 10px;
+}
+
+.main-task-item .main-task-status.to-do::before{
+    content: "Para fazer";
+    background-color: #5853c3;
+}
+
+.main-task-item .main-task-status.in-progress::before{
+    content: "Em progresso";
+    background-color: #ca9251;
+}
+
+.main-task-item .main-task-status.done::before{
+    content: "Concluida";
+    background-color: #72c47b;
+}
+
+.main-task-item .main-task-status.blocked::before{
+    content: "Bloqueada";
+    background-color: #b34a61;
+}
+
 .interface, .interface-bar-tools{
     min-height: 100vh;
 }
@@ -144,6 +171,11 @@ a:hover{
 .interface-wrapper-history > ul{
     padding-left: 0px;
     display: flow-root;
+}
+
+.search-form-input{
+    border-radius: 100px 0px 0px 100px;
+    height: 40px;
 }
 
 

@@ -34,6 +34,7 @@ $(document).ready(function(){
     var scoreTask = $("#scoreTask"); //TAG HTTML
     var parentTaskList = [];
     var tasks = {};
+    var setStatusDone = false;
     
     $(formTask).on("submit", function(e){
 
@@ -144,6 +145,53 @@ $(document).ready(function(){
             })
         })
     }
+
+    // function setStatusFlag(status){
+    //     switch(status){
+    //         case 'to-do':
+    //             setStatusDone = false;
+    //             break;
+    //         case 'done':
+    //             setStatusDone = true;
+    //             break;
+    //         case 'in-progress':
+    //             setStatusDone = false;
+    //             break;
+    //         case 'blocked':
+    //             setStatusDone = false;
+    //             break;
+    //     }
+    // }
+
+    // function setTaskSelectStatusOption(allowDone){
+    //     $(statusSelect).children().remove()
+    //     $(statusSelect).append('<option value="">Selecione um status</option>');
+    //     $(statusSelect).append('<option value="to-do">Para fazer</option>')
+    //     $(statusSelect).append('<option value="in-progress">Em progresso</option>')
+    //     $(statusSelect).append('<option value="blocked">Bloqueada</option>')
+    //     if(allowDone){
+    //         $(statusSelect).append('<option value="done">Concluida</option>');
+    //     }
+    // }
+
+    // function setStatusOptions(task){
+    //     var taskList = task.subtask;
+    //     if(task.subtask.length > 0){
+    //         taskList.forEach(function(item){
+    //             if(item.subtask.length > 0 ){
+    //                 setStatusOptions(item);
+    //                 setStatusFlag(item.status);
+    //             }
+    //             else{
+    //                 setStatusFlag(item.status);
+    //             }
+    //         })
+    //     }else{
+    //         setStatusFlag('done');
+    //     }
+        
+    //     setTaskSelectStatusOption(setStatusDone);
+    // }
     
     function init(){
 
@@ -241,6 +289,7 @@ $(document).ready(function(){
             url: api + "tasks/" + task_id,
             contentType: "application/json; charset=utf-8",
         }).then((res) =>{
+            // setStatusOptions(res.task[0]);
             taskUtils.setDataModal(res.task[0], totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
         })
     }
