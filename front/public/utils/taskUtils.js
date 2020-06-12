@@ -14,7 +14,7 @@ var f = {
                     '" data-id="'+item.id +
                     '" data-score="'+item.score +
                     '" data-total-score="'+ item.totalScore +'">' + 
-                        '<span class="main-task-status main-rounded '+ item.status +'">' + item.name + '</span>' +
+                        '<span class="main-task-status main-rounded '+ item.status +'">ID: '+ item.id + ' - ' + item.name + '</span>' +
                         '<div class="d-flex justify-content-center align-items-center">'+
                             '<button title="Ver tarefa" data-id="'+item.id+'" class="ml-3 main-circle main-btn main-bg-deep text-white edit" ><i class="fa fa-pencil"></i></button>' +
                             addDropdownButton + 
@@ -83,15 +83,17 @@ var f = {
          * indexParentInput(object) - TAG html que recebe o nível da tarefa
          */
 
-        var totalScore = task.totalScore > 0 ? task.totalScore : task.score
-        $(totalPoints).text(totalScore);
-        $(scoreTask).text(task.score);
-        $(idInput).val(task.id);
-        $(nameInput).val(task.name);
-        $(scoreInput).val(task.score);
-        $(statusSelect).val(task.status);
-        $(parentTaskSelect).val(task.parentTaskId);
-        $(indexParentInput).val(task.index);
+        if(task){
+            var totalScore = task.totalScore > 0 ? task.totalScore : task.score
+            $(totalPoints).text(totalScore);
+            $(scoreTask).text(task.score);
+            $(idInput).val(task.id);
+            $(nameInput).val(task.name);
+            $(scoreInput).val(task.score);
+            $(statusSelect).val(task.status);
+            $(parentTaskSelect).val(task.parentTaskId);
+            $(indexParentInput).val(task.index);
+        }
     },
 
     generateSubtaskList:(task, taskList) =>{

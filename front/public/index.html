@@ -17,11 +17,11 @@
                 <div class="interface-wrapper-tools">
                     <div class="main d-flex align-itens-center justify-content-between">
                         <div class="interface-wrapper-tools-buttons">
-                            <form class="mb-0">
+                            <form class="mb-0" id="formSearchTask">
                                 <div class="input-group">
-                                    <input type="text" class="form-control search-form-input border-0 main-bg-dark text-white" placeholder="Buscar tarefa" aria-label="Recipient's username" aria-describedby="button-addon2">
+                                    <input id="searchIdInput" type="text" class="form-control search-form-input border-0 main-bg-dark text-white" placeholder="Buscar tarefa por ID">
                                     <div class="input-group-append">
-                                      <button class="btn btn-outline-secondary main-circle main-btn main-bg-primary text-white" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
+                                      <button type="submit" class="btn btn-outline-secondary main-circle main-btn main-bg-primary text-white" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
                                     </div>
                                   </div>
                             </form>
@@ -124,6 +124,26 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="notFoundTaks" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content main-bg-dark">
+                    <form class="container-fluid mb-0" id="formImportTask">
+                        <div class="row">
+                            <div class="col-12 text-center text-white py-3">
+                                <h2 id="modalTitle" class="font-weight-light text-white">Tarefa não encontrada</h2>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 main-bg-deep py-3 d-flex justify-content-end align-itens-center">
+                                <button type="button" class="main-btn main-rounded text-white main-bg-danger mr-3" data-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
     </body>
 
     <script src="./assets/js/jquery.js"></script>

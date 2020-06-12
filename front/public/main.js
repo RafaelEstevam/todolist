@@ -21,7 +21,9 @@ $(document).ready(function(){
     var historyWrapper = $("#historyWrapper"); //TAG HTML
     var formTask = $("#formTask"); //TAG HTML
     var formImportTask = $("#formImportTask"); //TAG HTTML
+    var formSearchTask = $("#formSearchTask"); //TAG HTTML
     var importTasksInput = $("#importTasksInput"); //TAG HTTML
+    var searchIdInput = $("#searchIdInput"); //TAG HTTML
     var idInput = $("#idInput"); //TAG HTTML
     var nameInput = $("#nameInput"); //TAG HTTML
     var scoreInput = $("#scoreInput"); //TAG HTTML
@@ -37,11 +39,9 @@ $(document).ready(function(){
     var setStatusDone = false;
     
     $(formTask).on("submit", function(e){
-
         /** Submissão dos dados do formulário em JSON
          * e(object) - Elemento atual que recebe o evento
          */
-
         e.preventDefault();
         var taskId = $(idInput).val() == "" ? "" : parseInt($(idInput).val())
         var taskItem = { // formatação dos dados para a estrutura esperada pelo BACKEND
@@ -54,7 +54,6 @@ $(document).ready(function(){
             "status" : $("select[name='status']").val(),
             "subtask": []
         }
-
         tasks = {"tasks":[taskItem]};
         if(taskId == ""){
             store(tasks); // Quando for uma nova tarefa sem ID
@@ -63,11 +62,16 @@ $(document).ready(function(){
         }
     })
 
+    $(formSearchTask).on("submit", function(e){
+        e.preventDefault();
+        taskUtils.restoreDataModal(totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
+        showEditModal($(searchIdInput).val());
+    })
+
     $(importTasksInput).on("change", function(){
         /**
          * Inicializa a importação do CSV
          */
-
         csvUtils.csvImport(importTasksInput);
     })
 
@@ -75,7 +79,6 @@ $(document).ready(function(){
         /** Submissão do CSV para processamento e importação
          * e(object) - Elemento atual que recebe o evento
          */
-
         e.preventDefault();
         var csvList = csvUtils.csvSave();
         importTasks(csvList);
@@ -87,7 +90,6 @@ $(document).ready(function(){
         /** 
          * Apaga a tarefa de acordo com o ID
          */
-
         destroy($(idInput).val())
     })
 
@@ -132,16 +134,18 @@ $(document).ready(function(){
         $(indexParentInput).val(1);
     }
 
-    function setEditFunction(){
+    function showEditModal(id){
+        index(id);
+    }
 
+    function setEditFunction(){
         /**
          * Remove os dados atuais da interface
          */
 
         $(".edit").each(function(){
             $(this).on("click", function(){
-                $("#addTask").modal("show");
-                index($(this).data("id"));
+                showEditModal($(this).data("id"))
             })
         })
     }
@@ -203,12 +207,10 @@ $(document).ready(function(){
     }
 
     function store(data){
-
         /**
          * Cria uma nova tarefa
          * data - Dados da tarefa
          */
-
         $.ajax({
             type: "POST",
             url: api + "tasks/new",
@@ -290,7 +292,12 @@ $(document).ready(function(){
             contentType: "application/json; charset=utf-8",
         }).then((res) =>{
             // setStatusOptions(res.task[0]);
-            taskUtils.setDataModal(res.task[0], totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
+            if(res.task[0]){
+                $("#addTask").modal("show");
+                taskUtils.setDataModal(res.task[0], totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
+            }else{
+                $("#notFoundTaks").modal("show");
+            }
         })
     }
 
