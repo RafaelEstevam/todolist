@@ -1,7 +1,9 @@
 import csv
 import json
 
+# global variables
 mergedTasks = []
+# setStatusDone = 'false'
 
 def generateTask(task, converter):
     # - task(object) = Objeto com chaves e valores referentes a uma tarefa
@@ -107,6 +109,50 @@ def calcScoreTasks(mergedTasks) :
 
     return mergedTasks
 
+def validateAllTasksAllowDone(task, taskList):
+    # Verifica se todas as tarefas estão como done e se podem ser concluidas
+    # - task(object) = tarefa atual
+    # - taskList(array) = lista de tarefas da tarefa atual
+
+    allowDone = 0
+    for taskitem in taskList:
+        if taskitem['allowDone'] == 'true' and taskitem['status'] == 'done':
+            allowDone += 1
+
+    if allowDone == len(taskList):
+        task['allowDone'] = 'true'
+    else:
+        task['allowDone'] = 'false'
+
+
+def validateAllTasksDone(task, taskList):
+    # Verifica se todas as tarefas estão como done
+    # - task(object) = tarefa atual
+    # - taskList(array) = lista de tarefas da tarefa atual
+
+    done = 0
+    for taskitem in taskList:
+        if taskitem['status'] == 'done':
+            done += 1
+
+    if done == len(taskList):
+        task['allowDone'] = 'true'
+    else:
+        task['allowDone'] = 'false'
+
+
+def setStatusOption(taskList):
+    for task in taskList:
+        if len(task['subtask']) > 0:
+            validateAllTasksDone(task, task['subtask'])
+            setStatusOption(task['subtask'])
+            validateAllTasksAllowDone(task, task['subtask'])
+                
+        else:
+            task['allowDone'] = 'true'
+
+    return taskList
+
 def processCSV(request):
     # Processamento do json vindo na submição do formulário do front
     # Salvamento em arquivo CSV da lista 'simples' de tarefas
@@ -125,7 +171,7 @@ def processJSON(taskList):
     taskList["tasks"].sort(key=lambda item: item.get('index') )
 
     taskList = {
-        "tasks" : calcScoreTasks(addTasks(taskList))
+        "tasks" : setStatusOption(calcScoreTasks(addTasks(taskList)))
     }
 
     j = open("json/tasks.json", "w")
@@ -137,18 +183,18 @@ def deleteTaskAndProcessCSV(taskId):
     # - taskId = ID da tarefa que será apagada. 
     # Retorna uma mensagem para a requisição
 
+
     newTaskList = []
     r = csv.reader(open("csvs/newfile.csv"))
     for task in r :
-        print(task)
-        if task[0] != taskId and task[0] != 'id' and task[3] != taskId:
+        if task[0] != 'id' and task[0] != taskId  and task[3] != taskId:
             task = generateTask(task, True)
             newTaskList.append(task)
-    
+
     writeTaskOfArray(newTaskList)
     newTaskList = {"tasks" : newTaskList}
     processJSON(newTaskList)
-    return 'Tarefa deletada'
+    return taskId
         
 def createTaskInCSV(request):
     # - request = Biblioteca request importada no main.py
