@@ -58,7 +58,8 @@ $(document).ready(function(){
         if(taskId == ""){
             store(tasks); // Quando for uma nova tarefa sem ID
         }else{
-            update(tasks, taskId);  // Quando for uma tarefa com ID
+            // console.log(taskUtils.dataTask);
+            update(taskUtils.dataTask, taskId);  // Quando for uma tarefa com ID
         }
     })
 
@@ -150,53 +151,6 @@ $(document).ready(function(){
         })
     }
 
-    // function setStatusFlag(status){
-    //     switch(status){
-    //         case 'to-do':
-    //             setStatusDone = false;
-    //             break;
-    //         case 'done':
-    //             setStatusDone = true;
-    //             break;
-    //         case 'in-progress':
-    //             setStatusDone = false;
-    //             break;
-    //         case 'blocked':
-    //             setStatusDone = false;
-    //             break;
-    //     }
-    // }
-
-    // function setTaskSelectStatusOption(allowDone){
-    //     $(statusSelect).children().remove()
-    //     $(statusSelect).append('<option value="">Selecione um status</option>');
-    //     $(statusSelect).append('<option value="to-do">Para fazer</option>')
-    //     $(statusSelect).append('<option value="in-progress">Em progresso</option>')
-    //     $(statusSelect).append('<option value="blocked">Bloqueada</option>')
-    //     if(allowDone){
-    //         $(statusSelect).append('<option value="done">Concluida</option>');
-    //     }
-    // }
-
-    // function setStatusOptions(task){
-    //     var taskList = task.subtask;
-    //     if(task.subtask.length > 0){
-    //         taskList.forEach(function(item){
-    //             if(item.subtask.length > 0 ){
-    //                 setStatusOptions(item);
-    //                 setStatusFlag(item.status);
-    //             }
-    //             else{
-    //                 setStatusFlag(item.status);
-    //             }
-    //         })
-    //     }else{
-    //         setStatusFlag('done');
-    //     }
-        
-    //     setTaskSelectStatusOption(setStatusDone);
-    // }
-    
     function init(){
 
         /**
@@ -249,16 +203,17 @@ $(document).ready(function(){
          * task - Dados da tarefa
          * id - Id da tarefa
          */
-        
+
         $.ajax({
             type: "PUT",
-            url: api + "tasks/" + task_id,
+            url: api + "tasks/v2/" + task_id,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(task),
             dataType: 'json',
         }).then((res) =>{
-            destroyDashboard();
-            init();
+            console.log(res)
+            // destroyDashboard();
+            // init();
         })
     }
     

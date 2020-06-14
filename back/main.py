@@ -63,6 +63,11 @@ def deleteTaskInCSV(taskId):
 def updateTaskInCSV(taskId):
     return csvUtils.editTaskAndProcessCSV(taskId, request)
 
+@app.route("/tasks/v2/<taskId>", methods=['PUT'])
+@cross_origin()
+def updateTaskInCSV2(taskId):
+    return csvUtils.updateTaskAndProcessCSV(taskId, request)
+
 # @app.route("/sprints", methods=['POST'])
 # @cross_origin()
 # def calcSprint():

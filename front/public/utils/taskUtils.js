@@ -1,4 +1,7 @@
 var f = {
+
+    dataTask: null,
+
     appendItem: (parent, item) =>{
         
         /** Cria os elementos na interface para estruturar a lista de tarefas
@@ -34,6 +37,13 @@ var f = {
         })
     },
 
+    changeIndexTree: (task, taskList) =>{
+        taskList.forEach(function(item){
+            item.index = task.index + 1
+            f.changeIndexTree(item, item.subtask)
+        })
+    },
+
     generateOptions: (parentTaskList) =>{
         /** Adiciona opções no select de tarefa pai.
          * parentTaskList(array) - Lista de tarefas para gerar as opções
@@ -45,6 +55,11 @@ var f = {
         $(parentTaskSelect).on("change", function(){
             $(indexParentInput).removeAttr('min')
             $(indexParentInput).val($(this).children("option:selected").data('index') + 1)
+            
+            f.dataTask.index = parseInt($("input[name='index']").val());
+            f.dataTask.parentTaskId = parseInt($("select[name='parentTaskId']").val());
+
+            f.changeIndexTree(f.dataTask, f.dataTask.subtask);
         })
     },
 
@@ -82,6 +97,8 @@ var f = {
          * parentTaskSelect(object) - TAG html que seleciona a tarefa pai
          * indexParentInput(object) - TAG html que recebe o nível da tarefa
          */
+
+        f.dataTask = task;
 
         if(task){
             var totalScore = task.totalScore > 0 ? task.totalScore : task.score
