@@ -244,7 +244,7 @@ def updateTaskAndProcessCSV(taskId, request):
                     task[2] = newtask["name"]
                     task[3] = str(newtask["parentTaskId"])
                     task[4] = str(newtask["score"])
-                    task[5] = str(newtask["totalScore"])
+                    task[5] = str(0)
                     task[6] = newtask["status"]
                     task[7] = ''
             newCSVTaskList.append(generateTask(task, True))
