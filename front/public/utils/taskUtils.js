@@ -1,4 +1,8 @@
 var f = {
+
+    dataTask : null,
+    listTasksAndSubtasks : [],
+
     appendItem: (parent, item) =>{
         
         /** Cria os elementos na interface para estruturar a lista de tarefas
@@ -34,6 +38,15 @@ var f = {
         })
     },
 
+    setSubTasksIndex : (task, taskList) =>{
+        if(taskList.length > 0){
+            taskList.forEach(function(item){
+                item.index = task.index + 1;
+                f.setSubTasksIndex(item, item.subtask)
+            })
+        }
+    },
+
     generateOptions: (parentTaskList) =>{
         /** Adiciona opções no select de tarefa pai.
          * parentTaskList(array) - Lista de tarefas para gerar as opções
@@ -45,6 +58,9 @@ var f = {
         $(parentTaskSelect).on("change", function(){
             $(indexParentInput).removeAttr('min')
             $(indexParentInput).val($(this).children("option:selected").data('index') + 1)
+            f.dataTask.parentTaskId = parseInt($("select[name='parentTaskId']").val());
+            f.dataTask.index = parseInt($("input[name='index']").val());
+            f.setSubTasksIndex(f.dataTask, f.dataTask.subtask);
         })
     },
 
@@ -82,6 +98,8 @@ var f = {
          * parentTaskSelect(object) - TAG html que seleciona a tarefa pai
          * indexParentInput(object) - TAG html que recebe o nível da tarefa
          */
+
+        f.dataTask = task;
 
         if(task){
             var totalScore = task.totalScore > 0 ? task.totalScore : task.score
@@ -130,6 +148,18 @@ var f = {
         })
         var mainTasks = $('ul.main-tasks');
         f.addEventMainTask($(mainTasks));
+    },
+
+    listAllTasksAndSubtasks: (tasks) =>{
+        if(tasks.subtask.length > 0){
+            tasks.subtask.forEach(function(item){
+                f.listAllTasksAndSubtasks(item)
+            })
+        }
+        f.listTasksAndSubtasks.push(tasks);
+        return f.listTasksAndSubtasks.sort(function(a, b) {
+            return a.index - b.index;
+        })
     }
 }
 

@@ -44,6 +44,7 @@ $(document).ready(function(){
          */
         e.preventDefault();
         var taskId = $(idInput).val() == "" ? "" : parseInt($(idInput).val())
+
         var taskItem = { // formatação dos dados para a estrutura esperada pelo BACKEND
             "id": taskId,
             "index": parseInt($("input[name='index']").val()),
@@ -52,13 +53,21 @@ $(document).ready(function(){
             "parentTaskId" : parseInt($("select[name='parentTaskId']").val()),
             "totalScore" : 0,
             "status" : $("select[name='status']").val(),
-            "subtask": []
         }
-        tasks = {"tasks":[taskItem]};
+        
+
         if(taskId == ""){
+            taskItem.subtask = [];
+            tasks = {"tasks":[taskItem]};
             store(tasks); // Quando for uma nova tarefa sem ID
         }else{
-            update(tasks, taskId);  // Quando for uma tarefa com ID
+            taskItem.subtask = taskUtils.dataTask.subtask;
+            tasks = {"tasks":[taskItem]};
+            taskUtils.listTasksAndSubtasks = [];
+            updateAllTasks(taskUtils.listAllTasksAndSubtasks(taskItem))
+            // updateAllTasks(tasks)
+
+            // update(tasks, taskId);  // Quando for uma tarefa com ID
         }
     })
 
@@ -150,53 +159,6 @@ $(document).ready(function(){
         })
     }
 
-    // function setStatusFlag(status){
-    //     switch(status){
-    //         case 'to-do':
-    //             setStatusDone = false;
-    //             break;
-    //         case 'done':
-    //             setStatusDone = true;
-    //             break;
-    //         case 'in-progress':
-    //             setStatusDone = false;
-    //             break;
-    //         case 'blocked':
-    //             setStatusDone = false;
-    //             break;
-    //     }
-    // }
-
-    // function setTaskSelectStatusOption(allowDone){
-    //     $(statusSelect).children().remove()
-    //     $(statusSelect).append('<option value="">Selecione um status</option>');
-    //     $(statusSelect).append('<option value="to-do">Para fazer</option>')
-    //     $(statusSelect).append('<option value="in-progress">Em progresso</option>')
-    //     $(statusSelect).append('<option value="blocked">Bloqueada</option>')
-    //     if(allowDone){
-    //         $(statusSelect).append('<option value="done">Concluida</option>');
-    //     }
-    // }
-
-    // function setStatusOptions(task){
-    //     var taskList = task.subtask;
-    //     if(task.subtask.length > 0){
-    //         taskList.forEach(function(item){
-    //             if(item.subtask.length > 0 ){
-    //                 setStatusOptions(item);
-    //                 setStatusFlag(item.status);
-    //             }
-    //             else{
-    //                 setStatusFlag(item.status);
-    //             }
-    //         })
-    //     }else{
-    //         setStatusFlag('done');
-    //     }
-        
-    //     setTaskSelectStatusOption(setStatusDone);
-    // }
-    
     function init(){
 
         /**
@@ -211,6 +173,7 @@ $(document).ready(function(){
          * Cria uma nova tarefa
          * data - Dados da tarefa
          */
+
         $.ajax({
             type: "POST",
             url: api + "tasks/new",
@@ -241,6 +204,15 @@ $(document).ready(function(){
             setEditFunction();
         })
     }
+
+    function updateAllTasks(taskList){
+        // console.log(taskList);
+        taskList.forEach(function(item){
+            item.subtask = [];
+            tasks = {"tasks":[item]};
+            update(tasks, item.id);
+        })
+    }
     
     function update (task, task_id){
         
@@ -249,7 +221,15 @@ $(document).ready(function(){
          * task - Dados da tarefa
          * id - Id da tarefa
          */
-        
+
+        // console.log(task.tasks[0].subtask)
+
+        // if(task.tasks[0].subtask.length > 0){
+        //     task.tasks[0].subtask.forEach(function(item){
+        //         updateAllTasks(task.tasks[0], item)
+        //     })
+        // }
+
         $.ajax({
             type: "PUT",
             url: api + "tasks/" + task_id,
@@ -257,8 +237,14 @@ $(document).ready(function(){
             data: JSON.stringify(task),
             dataType: 'json',
         }).then((res) =>{
-            destroyDashboard();
-            init();
+            console.log(res);
+            // if(task.tasks[0].subtask.length > 0){
+            //     task.tasks[0].subtask.forEach(function(item){
+            //         updateAllTasks(task.tasks[0], item)
+            //     })
+            // }
+            // destroyDashboard();
+            // init();
         })
     }
     
@@ -276,6 +262,17 @@ $(document).ready(function(){
         }).then((res) =>{
             destroyDashboard();
             init();
+        })
+    }
+
+    function indexParent(task_id){
+        $.ajax({
+            type: "GET",
+            url: api + "tasks/" + task_id,
+            contentType: "application/json; charset=utf-8",
+        }).then((res) =>{
+            console.log(res)
+            // setStatusOptions(res.task[0]);
         })
     }
     
