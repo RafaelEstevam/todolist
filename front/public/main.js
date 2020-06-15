@@ -203,9 +203,14 @@ $(document).ready(function(){
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
         }).then((res) =>{
+            console.log(res);
+
+            taskUtils.refreshParentTasks(res)
+            taskUtils.setItem(res)
+            setEditFunction();
             // taskUtils.setItem(res);
-            destroyDashboard();
-            init();
+            // destroyDashboard();
+            // init();
         })
     }
     

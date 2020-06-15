@@ -2,7 +2,7 @@ import api from './api.js'
 
 var f = {
 
-    dataTask: null,
+    dataTask: {},
 
     appendItem: (parent, item) =>{
         
@@ -59,7 +59,7 @@ var f = {
          */
 
         parentTaskList.forEach(function(item){
-            $(parentTaskSelect).append('<option data-index="'+item.index+'" value="' + item.id + '">'+item.name+'</option>')
+            $(parentTaskSelect).append('<option data-index="'+item.index+'" value="' + item.id + '">'+ item.id + ' - ' + item.name+'</option>')
         })
         $(parentTaskSelect).on("change", function(){
             $(indexParentInput).removeAttr('min')
