@@ -183,7 +183,7 @@ var f = {
     },
 
     refreshParentTasks: (data) => {
-        if(data.allowDone == "false"){
+        if(data.allowDone == "false" && data.status == "done"){
             $("#item-"+data.id).addClass("false")
         }else{
             if($("#item-"+data.id).hasClass("false")){

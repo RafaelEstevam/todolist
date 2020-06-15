@@ -20,3 +20,4 @@ id,index,name,parentTaskId,score,totalScore,status,subtask
 20,1,Nome da tarefa 20,0,2,0,done,
 21,4,Nome da tarefa 13,2,12,0,done,
 22,5,Nome da tarefa 1,21,12,0,done,
+23,7,Nome da tarefa 1,7,12,0,done,
