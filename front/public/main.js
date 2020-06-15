@@ -59,7 +59,18 @@ $(document).ready(function(){
             store(tasks); // Quando for uma nova tarefa sem ID
         }else{
             // console.log(taskUtils.dataTask);
-            update(taskUtils.dataTask, taskId);  // Quando for uma tarefa com ID
+
+            taskUtils.dataTask.name = $("input[name='name']").val()
+            taskUtils.dataTask.score =  parseInt($("input[name='score']").val())
+            taskUtils.dataTask.totalScore = 0
+            taskUtils.dataTask.status = $("select[name='status']").val()
+
+            if(taskUtils.dataTask.subtask.length > 0){
+                updateAll(taskUtils.dataTask, taskId);  // Quando for uma tarefa com ID
+            }else{
+                update(tasks, taskId);  // Quando for uma tarefa com ID
+            }
+
         }
     })
 
@@ -100,6 +111,7 @@ $(document).ready(function(){
          */
 
         $("#addTask").modal("show");
+        setTaskSelectStatusOption("true");
         taskUtils.restoreDataModal(totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
     })
 
@@ -145,10 +157,29 @@ $(document).ready(function(){
          */
 
         $(".edit").each(function(){
+            $(this).off();
             $(this).on("click", function(){
                 showEditModal($(this).data("id"))
             })
         })
+
+        $(".dropdown").each(function(){
+            $(this).off();
+            $(this).on("click", function(){
+                $(this).parent().parent().parent().toggleClass("active");
+            })
+        })
+    }
+
+    function setTaskSelectStatusOption(allowDone){
+        $(statusSelect).children().remove()
+        $(statusSelect).append('<option value="">Selecione um status</option>');
+        $(statusSelect).append('<option value="to-do">Para fazer</option>')
+        $(statusSelect).append('<option value="in-progress">Em progresso</option>')
+        $(statusSelect).append('<option value="blocked">Bloqueada</option>')
+        if(allowDone == "true"){
+            $(statusSelect).append('<option value="done">Concluida</option>');
+        }
     }
 
     function init(){
@@ -172,6 +203,7 @@ $(document).ready(function(){
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
         }).then((res) =>{
+            // taskUtils.setItem(res);
             destroyDashboard();
             init();
         })
@@ -188,15 +220,39 @@ $(document).ready(function(){
             async: false,
             contentType: "application/json; charset=utf-8",
         }).then(function (res){
-            taskUtils.generateList(JSON.parse(res));
+            taskUtils.generateList($(historyWrapper), JSON.parse(res));
             generateSelectParentOption(JSON.parse(res).tasks);
         }).then(function(){
             taskUtils.generateOptions(parentTaskList);
             setEditFunction();
         })
     }
-    
+
     function update (task, task_id){
+        /**
+         * Edita uma tarefa
+         * task - Dados da tarefa
+         * id - Id da tarefa
+         */
+
+        $.ajax({
+            type: "PUT",
+            url: api + "tasks/" + task_id,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(task),
+            dataType: 'json',
+        }).then((res) =>{
+            // console.log(res)
+            taskUtils.refreshParentTasks(res.task[0])
+            taskUtils.setItem(res.task[0])
+            setEditFunction();
+
+            // destroyDashboard();
+            // init();
+        })
+    }
+    
+    function updateAll (task, task_id){
         
         /**
          * Edita uma tarefa
@@ -211,7 +267,10 @@ $(document).ready(function(){
             data: JSON.stringify(task),
             dataType: 'json',
         }).then((res) =>{
-            console.log(res)
+            // console.log(res)
+            taskUtils.refreshParentTasks(res.task[0])
+            taskUtils.setItem(res.task[0])
+            setEditFunction();
             // destroyDashboard();
             // init();
         })
@@ -229,6 +288,7 @@ $(document).ready(function(){
             url: api + "tasks/" + task_id,
             contentType: "application/json; charset=utf-8",
         }).then((res) =>{
+            // taskUtils.deleteItem(task_id);
             destroyDashboard();
             init();
         })
@@ -249,6 +309,7 @@ $(document).ready(function(){
             // setStatusOptions(res.task[0]);
             if(res.task[0]){
                 $("#addTask").modal("show");
+                setTaskSelectStatusOption(res.task[0].allowDone)
                 taskUtils.setDataModal(res.task[0], totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
             }else{
                 $("#notFoundTaks").modal("show");

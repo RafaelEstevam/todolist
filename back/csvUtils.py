@@ -114,6 +114,49 @@ def calcScoreTasks(mergedTasks) :
 
     return mergedTasks
 
+def validateAllTasksAllowDone(task, taskList):
+    # Verifica se todas as tarefas estão como done e se podem ser concluidas
+    # - task(object) = tarefa atual
+    # - taskList(array) = lista de tarefas da tarefa atual
+
+    allowDone = 0
+    for taskitem in taskList:
+        if taskitem['allowDone'] == 'true' and taskitem['status'] == 'done':
+            allowDone += 1
+
+    if allowDone == len(taskList):
+        task['allowDone'] = 'true'
+    else:
+        task['allowDone'] = 'false'
+
+
+def validateAllTasksDone(task, taskList):
+    # Verifica se todas as tarefas estão como done
+    # - task(object) = tarefa atual
+    # - taskList(array) = lista de tarefas da tarefa atual
+
+    done = 0
+    for taskitem in taskList:
+        if taskitem['status'] == 'done':
+            done += 1
+
+    if done == len(taskList):
+        task['allowDone'] = 'true'
+    else:
+        task['allowDone'] = 'false'
+
+def setStatusOption(taskList):
+    for task in taskList:
+        if len(task['subtask']) > 0:
+            validateAllTasksDone(task, task['subtask'])
+            setStatusOption(task['subtask'])
+            validateAllTasksAllowDone(task, task['subtask'])
+                
+        else:
+            task['allowDone'] = 'true'
+
+    return taskList
+
 def processCSV(request):
     # Processamento do json vindo na submição do formulário do front
     # Salvamento em arquivo CSV da lista 'simples' de tarefas
@@ -135,7 +178,7 @@ def processJSON(taskList):
     #     print(task)
 
     taskList = {
-        "tasks" : calcScoreTasks(addTasks(taskList))
+        "tasks" : setStatusOption(calcScoreTasks(addTasks(taskList)))
     }
 
     j = open("json/tasks.json", "w")

@@ -41,6 +41,11 @@ a:hover{
 .main-tasks{background:#2e2c33;margin-bottom:2px}
 .main-input{border: 1px solid rgba(255,255,255,0.2)}
 
+.main-dropdown{cursor: default !important;}
+.main-dropdown i{color: transparent;}
+.main-dropdown.dropdown{cursor: pointer !important;}
+.main-dropdown.dropdown i{color: inherit;}
+
 .main-task-item{
     padding: 0px 15px 0px 0px;
     display: flex;
@@ -98,6 +103,7 @@ a:hover{
 .main-task-item .main-task-status.to-do{border-left: 5px solid #5853c3;}
 .main-task-item .main-task-status.in-progress{border-left: 5px solid #ca9251;}
 .main-task-item .main-task-status.done{border-left: 5px solid #72c47b;}
+.main-task-item .main-task-status.false{border-left: 5px solid #b3318b;}
 .main-task-item .main-task-status.blocked{border-left: 5px solid #b34a61;}
 
 .main-task-item .main-task-status::before{
@@ -121,6 +127,19 @@ a:hover{
     content: "Concluida";
     background-color: #72c47b;
 }
+
+.main-task-item .main-task-status.false::before{
+    content: "Alerta";
+    background-color: #b3318b;
+    cursor: pointer;
+}
+
+/* .main-task-item .main-task-status.false::before{
+    content: "Tarefa dada como concluida mas que recebeu uma atualização de alguma tarefa filha que a impede de ser fechada";
+    position: absolute;
+    left: 0px;
+    font-size: 10px;
+} */
 
 .main-task-item .main-task-status.blocked::before{
     content: "Bloqueada";

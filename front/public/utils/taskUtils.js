@@ -1,3 +1,5 @@
+import api from './api.js'
+
 var f = {
 
     dataTask: null,
@@ -9,15 +11,21 @@ var f = {
          *  item(object) - elemento filho da lista
          */
 
-        var addDropdownButton = '<button class="ml-3 main-circle main-btn bg-transparent text-white main-dropdown" ><i class="fa fa-chevron-down"></i></button>'
-        addDropdownButton = item.subtask.length > 0 ? addDropdownButton : '<button style="cursor: default;" class="ml-3 main-circle main-btn bg-transparent text-white main-dropdown" ><i class="fa fa-chevron-down main-text-gray"></i></button>'
+        if(item.allowDone == "false" && item.status == "done"){
+            item.status = "false"
+        }
+
+        var addDropdownButton = '<button id="btn-drop-'+ item.id +'" class="ml-3 main-circle main-btn bg-transparent text-white main-dropdown dropdown" ><i class="fa fa-chevron-down"></i></button>'
+        addDropdownButton = item.subtask.length > 0 ? addDropdownButton : '<button id="btn-drop-'+ item.id +'" class="ml-3 main-circle main-btn bg-transparent text-white main-dropdown" ><i class="fa fa-chevron-down"></i></button>'
+        // addDropdownButton = item.subtask.length > 0 ? addDropdownButton : '';
+        
         $(parent).append(
             '<ul data-index="' + item.index +'" id="'+item.id+'" class="main-tasks main-rounded">' +
                 '<li class="main-task-item main-rounded main-bg-gray "' +
-                    '" data-id="'+item.id +
+                    'data-id="'+item.id +
                     '" data-score="'+item.score +
                     '" data-total-score="'+ item.totalScore +'">' + 
-                        '<span class="main-task-status main-rounded '+ item.status +'">ID: '+ item.id + ' - ' + item.name + '</span>' +
+                        '<span id="item-' + item.id + '" class="main-task-status main-rounded '+ item.status +'">ID: '+ item.id + ' - ' + item.name + '</span>' +
                         '<div class="d-flex justify-content-center align-items-center">'+
                             '<button title="Ver tarefa" data-id="'+item.id+'" class="ml-3 main-circle main-btn main-bg-deep text-white edit" ><i class="fa fa-pencil"></i></button>' +
                             addDropdownButton + 
@@ -25,6 +33,7 @@ var f = {
                 '</li>' +
             '</ul>')
     },
+    
     addEventMainTask:(mainTasks) =>{
         /** Adiciona o evento de abertura de árvore para mostar subtarefas.
          * mainTasks(array) - lista de elementos que recebem o evento
@@ -132,21 +141,69 @@ var f = {
         })
     },
 
-    generateList: (taskList) =>{
+    generateList: (element, taskList) =>{
         /** Gera na interface as tarefas
-         * taskList(array) - TAG html que recebe os pontos da tarefa
+         * taskList(array) - lista de tarefas principais
          */
 
         taskList.tasks.forEach(function(task){
             if(task.index == 1){
-                f.appendItem($(historyWrapper), task)
+                f.appendItem(element, task);
             }
             if(task.subtask.length > 0){
                 f.generateSubtaskList(task, task.subtask);
             }
         })
-        var mainTasks = $('ul.main-tasks');
-        f.addEventMainTask($(mainTasks));
+        // var mainTasks = $('ul.main-tasks');
+        // f.addEventMainTask($(mainTasks));
+    },
+
+    setItem: (data) =>{
+        $("#"+data.id).remove();
+        if(data.index == 1){
+            f.appendItem($(historyWrapper), data);
+        }else{
+            f.appendItem($("#"+data.parentTaskId), data);
+        }
+
+        if(data.subtask.length > 0){
+            f.generateSubtaskList(data, data.subtask);
+        }
+        f.setBtnDrowdown(data);
+    },
+
+    indexAll: (parentTasiId) =>{
+        $.ajax({
+            type: "GET",
+            url: api + "tasks/" + parentTasiId,
+            contentType: "application/json; charset=utf-8",
+        }).then(function(res){
+            f.refreshParentTasks(res.task[0])
+        })
+    },
+
+    refreshParentTasks: (data) => {
+        if(data.allowDone == "false"){
+            $("#item-"+data.id).addClass("false")
+        }else{
+            if($("#item-"+data.id).hasClass("false")){
+                $("#item-"+data.id).removeClass("false")
+            }
+            $("#item-"+data.id).addClass(data.status)
+        }
+
+        if(data.parentTaskId > 0){
+            f.indexAll(data.parentTaskId)
+        }
+
+    },
+
+    setBtnDrowdown: (data) =>{
+        $("#btn-drop-"+data.parentTaskId).addClass("dropdown")
+    },
+
+    deleteItem: (data) =>{
+        $("#"+data).remove();
     }
 }
 
