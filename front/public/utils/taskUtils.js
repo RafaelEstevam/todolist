@@ -4,7 +4,7 @@ var parentTaskList = [];
 
 var f = {
 
-    dataTask: {},
+    dataTask: {oldParentTaskId: 0},
 
     appendItem: (parent, item) =>{
         
@@ -67,6 +67,7 @@ var f = {
         $(indexParentInput).val($(parentTaskSelect).children("option:selected").data('index') + 1);
         
         f.dataTask.index = parseInt($("input[name='index']").val());
+        f.dataTask.oldParentTaskId = f.dataTask.parentTaskId;
         f.dataTask.parentTaskId = parseInt($("select[name='parentTaskId']").val());
 
         f.changeIndexTree(f.dataTask, f.dataTask.subtask);
@@ -240,7 +241,7 @@ var f = {
         f.setBtnDrowdown(data);
     },
 
-    indexAll: (parentTasiId) =>{
+    getParentAndRefresh: (parentTasiId) =>{
         $.ajax({
             type: "GET",
             url: api + "tasks/" + parentTasiId,
@@ -250,7 +251,7 @@ var f = {
         })
     },
 
-    refreshParentTasks: (data) => {
+    refreshTask: (data) =>{
         if(data.allowDone == "false" && data.status == "done"){
             $("#item-"+data.id).addClass("false")
         }else{
@@ -259,9 +260,32 @@ var f = {
             }
             $("#item-"+data.id).addClass(data.status)
         }
+    },
+
+    refreshOldParentTasks: (data) =>{
+        f.refreshTask(data);
+
+        if(data.oldParentTaskId > 0){
+            f.getParentAndRefresh(data.oldParentTaskId)
+        }
+    },
+
+    refreshParentTasks: (data) => {
+        // if(data.allowDone == "false" && data.status == "done"){
+        //     $("#item-"+data.id).addClass("false")
+        // }else{
+        //     if($("#item-"+data.id).hasClass("false")){
+        //         $("#item-"+data.id).removeClass("false")
+        //     }
+        //     $("#item-"+data.id).addClass(data.status)
+        // }
+
+        // console.log(data)
+
+        f.refreshTask(data);
 
         if(data.parentTaskId > 0){
-            f.indexAll(data.parentTaskId)
+            f.getParentAndRefresh(data.parentTaskId)
         }
 
     },

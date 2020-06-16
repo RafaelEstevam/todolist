@@ -15,10 +15,11 @@ def generateTask(task, converter):
                 "id" : int(task[0]),
                 "index": int(task[1]),
                 "name" : task[2],
-                "parentTaskId" : int(task[3]),
-                "score" : int(task[4]),
-                "totalScore" : int(task[5]),
-                "status" : task[6],
+                "oldParentTaskId" : int(task[3]),
+                "parentTaskId" : int(task[4]),
+                "score" : int(task[5]),
+                "totalScore" : int(task[6]),
+                "status" : task[7],
                 "subtask" : []
             }
     else:
@@ -26,6 +27,7 @@ def generateTask(task, converter):
                 "id" : task["id"],
                 "index" : task["index"],
                 "name" : task["name"],
+                "oldParentTaskId" : task["oldParentTaskId"],
                 "parentTaskId" : task["parentTaskId"],
                 "score" : task["score"],
                 "totalScore" : task["totalScore"],
@@ -40,12 +42,13 @@ def writeTaskOfArray(taskList):
     #     print(item)
 
     file = csv.writer(open("csvs/newfile.csv", "w", newline=''))
-    file.writerow(["id", "index", "name", "parentTaskId", "score", "totalScore", "status", "subtask"])
+    file.writerow(["id", "index", "name", "oldParentTaskId", "parentTaskId", "score", "totalScore", "status", "subtask"])
     for task in taskList:
         file.writerow([
             task["id"],
             task["index"], 
             task["name"],
+            task["oldParentTaskId"],
             task["parentTaskId"],
             task["score"],
             task["totalScore"],
@@ -285,11 +288,12 @@ def updateTaskAndProcessCSV(taskId, request):
                     task[0] = str(newtask["id"])
                     task[1] = str(newtask["index"])
                     task[2] = newtask["name"]
-                    task[3] = str(newtask["parentTaskId"])
-                    task[4] = str(newtask["score"])
-                    task[5] = str(0)
-                    task[6] = newtask["status"]
-                    task[7] = ''
+                    task[3] = newtask["oldParentTaskId"]
+                    task[4] = str(newtask["parentTaskId"])
+                    task[5] = str(newtask["score"])
+                    task[6] = str(0)
+                    task[7] = newtask["status"]
+                    task[8] = ''
             newCSVTaskList.append(generateTask(task, True))
     
     writeTaskOfArray(newCSVTaskList)

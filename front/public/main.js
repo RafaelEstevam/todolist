@@ -49,13 +49,14 @@ $(document).ready(function(){
             "index": parseInt($("input[name='index']").val()),
             "name": $("input[name='name']").val(),
             "score": parseInt($("input[name='score']").val()),
+            "oldParentTaskId" : 0,
             "parentTaskId" : parseInt($("select[name='parentTaskId']").val()),
             "totalScore" : 0,
             "status" : $("select[name='status']").val(),
             "subtask": []
         }
-        tasks = {"tasks":[taskItem]};
         if(taskId == ""){
+            tasks = {"tasks":[taskItem]};
             store(tasks); // Quando for uma nova tarefa sem ID
         }else{
 
@@ -68,6 +69,7 @@ $(document).ready(function(){
             if(taskUtils.dataTask.subtask.length > 0){
                 updateAll(taskUtils.dataTask, taskId);
             }else{
+                tasks = {"tasks":[taskUtils.dataTask]};
                 update(tasks, taskId);
             }
 
@@ -255,7 +257,9 @@ $(document).ready(function(){
             data: JSON.stringify(task),
             dataType: 'json',
         }).then((res) =>{
-            // console.log(res)
+            console.log(res)
+            
+            taskUtils.refreshOldParentTasks(res.task[0])
             taskUtils.refreshParentTasks(res.task[0])
             taskUtils.setItem(res.task[0])
             setEditFunction();
@@ -280,7 +284,7 @@ $(document).ready(function(){
             data: JSON.stringify(task),
             dataType: 'json',
         }).then((res) =>{
-            // console.log(res)
+            taskUtils.refreshOldParentTasks(res.task[0])
             taskUtils.refreshParentTasks(res.task[0])
             taskUtils.setItem(res.task[0])
             setEditFunction();
