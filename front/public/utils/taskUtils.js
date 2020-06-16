@@ -1,5 +1,7 @@
 import api from './api.js'
 
+var parentTaskList = [];
+
 var f = {
 
     dataTask: {},
@@ -53,23 +55,89 @@ var f = {
         })
     },
 
-    generateOptions: (parentTaskList) =>{
-        /** Adiciona opções no select de tarefa pai.
-         * parentTaskList(array) - Lista de tarefas para gerar as opções
+    setUpdateDataTask: () =>{
+        f.dataTask.name = $("input[name='name']").val()
+        f.dataTask.score =  parseInt($("input[name='score']").val())
+        f.dataTask.totalScore = 0
+        f.dataTask.status = $("select[name='status']").val()
+    },
+
+    setOnChangeParentTaskSelect: (indexParentInput, parentTaskSelect) => {
+        $(indexParentInput).removeAttr('min');
+        $(indexParentInput).val($(parentTaskSelect).children("option:selected").data('index') + 1);
+        
+        f.dataTask.index = parseInt($("input[name='index']").val());
+        f.dataTask.parentTaskId = parseInt($("select[name='parentTaskId']").val());
+
+        f.changeIndexTree(f.dataTask, f.dataTask.subtask);
+    },
+
+    setTaskSelectStatusOption: (statusSelect, allowDone) =>{
+        $(statusSelect).children().remove()
+        $(statusSelect).append('<option value="">Selecione um status</option>');
+        $(statusSelect).append('<option value="to-do">Para fazer</option>')
+        $(statusSelect).append('<option value="in-progress">Em progresso</option>')
+        $(statusSelect).append('<option value="blocked">Bloqueada</option>')
+        if(allowDone == "true"){
+            $(statusSelect).append('<option value="done">Concluida</option>');
+        }
+    },
+
+    generateSelectParentOption: (taskList) =>{
+
+        /** 
+         * Lê todas as listas de tarefas e subtarefas e adiciona a um novo array para ordená-la pelo id
          */
 
-        parentTaskList.forEach(function(item){
-            $(parentTaskSelect).append('<option data-index="'+item.index+'" value="' + item.id + '">'+ item.id + ' - ' + item.name+'</option>')
+        taskList.forEach(function(item){
+            if(item.subtask.length > 0){
+                parentTaskList.push(item);
+                f.generateSelectParentOption(item.subtask)
+            }else{
+                parentTaskList.push(item);
+            }
         })
-        $(parentTaskSelect).on("change", function(){
-            $(indexParentInput).removeAttr('min')
-            $(indexParentInput).val($(this).children("option:selected").data('index') + 1)
-            
-            f.dataTask.index = parseInt($("input[name='index']").val());
-            f.dataTask.parentTaskId = parseInt($("select[name='parentTaskId']").val());
+        return parentTaskList.sort(function(a,b){
+            return a.id - b.id;
+        })
+    },
 
-            f.changeIndexTree(f.dataTask, f.dataTask.subtask);
+    removeAddDefaultSelectOptions: (parentTaskSelect) =>{
+        parentTaskList = [];
+        $(parentTaskSelect).children().remove()
+        $(parentTaskSelect).append('<option data-index="0" value="0">Tarefa principal</option>');
+    },
+
+    generateTaskOptions: (parentTaskSelect) =>{
+
+        /** Adiciona opções no select de tarefa.
+         * parentTaskSelect(element) - Componente que recebe a lista de tarefas
+         */
+        
+        $.ajax({
+            type: "GET",
+            url: api + "tasks",
+            async: false,
+            contentType: "application/json; charset=utf-8",
+        }).then(function (res){
+            f.generateSelectParentOption(JSON.parse(res).tasks).forEach(function(item){
+                $(parentTaskSelect).append('<option data-index="'+item.index+'" value="' + item.id + '">'+ item.id + ' - ' + item.name+'</option>')
+            })
         })
+
+        // parentTaskList.forEach(function(item){
+        //     $(parentTaskSelect).append('<option data-index="'+item.index+'" value="' + item.id + '">'+ item.id + ' - ' + item.name+'</option>')
+        // })
+
+        // $(parentTaskSelect).on("change", function(){
+        //     $(indexParentInput).removeAttr('min')
+        //     $(indexParentInput).val($(this).children("option:selected").data('index') + 1)
+            
+        //     f.dataTask.index = parseInt($("input[name='index']").val());
+        //     f.dataTask.parentTaskId = parseInt($("select[name='parentTaskId']").val());
+
+        //     f.changeIndexTree(f.dataTask, f.dataTask.subtask);
+        // })
     },
 
     restoreDataModal: (totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput) =>{

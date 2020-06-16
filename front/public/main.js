@@ -34,7 +34,7 @@ $(document).ready(function(){
     var addTaskButton = $("#addTaskButton"); //TAG HTTML
     var totalPoints = $("#totalPoints"); //TAG HTTML
     var scoreTask = $("#scoreTask"); //TAG HTTML
-    var parentTaskList = [];
+    // var parentTaskList = [];
     var tasks = {};
     var setStatusDone = false;
     
@@ -58,17 +58,17 @@ $(document).ready(function(){
         if(taskId == ""){
             store(tasks); // Quando for uma nova tarefa sem ID
         }else{
-            // console.log(taskUtils.dataTask);
 
-            taskUtils.dataTask.name = $("input[name='name']").val()
-            taskUtils.dataTask.score =  parseInt($("input[name='score']").val())
-            taskUtils.dataTask.totalScore = 0
-            taskUtils.dataTask.status = $("select[name='status']").val()
+            // taskUtils.dataTask.name = $("input[name='name']").val()
+            // taskUtils.dataTask.score =  parseInt($("input[name='score']").val())
+            // taskUtils.dataTask.totalScore = 0
+            // taskUtils.dataTask.status = $("select[name='status']").val()
+            taskUtils.setUpdateDataTask();
 
             if(taskUtils.dataTask.subtask.length > 0){
-                updateAll(taskUtils.dataTask, taskId);  // Quando for uma tarefa com ID
+                updateAll(taskUtils.dataTask, taskId);
             }else{
-                update(tasks, taskId);  // Quando for uma tarefa com ID
+                update(tasks, taskId);
             }
 
         }
@@ -109,30 +109,35 @@ $(document).ready(function(){
         /** 
          * Adiciona nova tarefa
          */
-
         $("#addTask").modal("show");
-        setTaskSelectStatusOption("true");
+        taskUtils.removeAddDefaultSelectOptions(parentTaskSelect);
+        taskUtils.generateTaskOptions(parentTaskSelect);
+        taskUtils.setTaskSelectStatusOption(statusSelect, "true");
         taskUtils.restoreDataModal(totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
     })
 
-    function generateSelectParentOption(taskList){
+    $(parentTaskSelect).on("change", function(){
+        taskUtils.setOnChangeParentTaskSelect(indexParentInput, parentTaskSelect)
+    })
 
-        /** 
-         * Lê todas as listas de tarefas e subtarefas e adiciona a um novo array para ordená-la pelo id
-         */
+    // function generateSelectParentOption(taskList){
 
-        taskList.forEach(function(item){
-            if(item.subtask.length > 0){
-                parentTaskList.push(item);
-                generateSelectParentOption(item.subtask)
-            }else{
-                parentTaskList.push(item);
-            }
-        })
-        parentTaskList.sort(function(a,b){
-            return a.id - b.id;
-        })
-    }
+    //     /** 
+    //      * Lê todas as listas de tarefas e subtarefas e adiciona a um novo array para ordená-la pelo id
+    //      */
+
+    //     taskList.forEach(function(item){
+    //         if(item.subtask.length > 0){
+    //             parentTaskList.push(item);
+    //             generateSelectParentOption(item.subtask)
+    //         }else{
+    //             parentTaskList.push(item);
+    //         }
+    //     })
+    //     parentTaskList.sort(function(a,b){
+    //         return a.id - b.id;
+    //     })
+    // }
 
     function destroyDashboard(){
 
@@ -140,14 +145,17 @@ $(document).ready(function(){
          * Remove os dados atuais da interface
          */
 
-        parentTaskList = [];
+        // parentTaskList = [];
         $(historyWrapper).children().remove()
-        $(parentTaskSelect).children().remove()
-        $(parentTaskSelect).append('<option data-index="0" value="0">Tarefa principal</option>');
+        // $(parentTaskSelect).children().remove()
+        // $(parentTaskSelect).append('<option data-index="0" value="0">Tarefa principal</option>');
+        taskUtils.removeAddDefaultSelectOptions(parentTaskSelect);
         $(indexParentInput).val(1);
     }
 
     function showEditModal(id){
+        taskUtils.removeAddDefaultSelectOptions(parentTaskSelect);
+        taskUtils.generateTaskOptions(parentTaskSelect);
         index(id);
     }
 
@@ -171,16 +179,16 @@ $(document).ready(function(){
         })
     }
 
-    function setTaskSelectStatusOption(allowDone){
-        $(statusSelect).children().remove()
-        $(statusSelect).append('<option value="">Selecione um status</option>');
-        $(statusSelect).append('<option value="to-do">Para fazer</option>')
-        $(statusSelect).append('<option value="in-progress">Em progresso</option>')
-        $(statusSelect).append('<option value="blocked">Bloqueada</option>')
-        if(allowDone == "true"){
-            $(statusSelect).append('<option value="done">Concluida</option>');
-        }
-    }
+    // function setTaskSelectStatusOption(allowDone){
+    //     $(statusSelect).children().remove()
+    //     $(statusSelect).append('<option value="">Selecione um status</option>');
+    //     $(statusSelect).append('<option value="to-do">Para fazer</option>')
+    //     $(statusSelect).append('<option value="in-progress">Em progresso</option>')
+    //     $(statusSelect).append('<option value="blocked">Bloqueada</option>')
+    //     if(allowDone == "true"){
+    //         $(statusSelect).append('<option value="done">Concluida</option>');
+    //     }
+    // }
 
     function init(){
 
@@ -203,8 +211,7 @@ $(document).ready(function(){
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
         }).then((res) =>{
-            console.log(res);
-
+            
             taskUtils.refreshParentTasks(res)
             taskUtils.setItem(res)
             setEditFunction();
@@ -226,9 +233,10 @@ $(document).ready(function(){
             contentType: "application/json; charset=utf-8",
         }).then(function (res){
             taskUtils.generateList($(historyWrapper), JSON.parse(res));
-            generateSelectParentOption(JSON.parse(res).tasks);
+            // generateSelectParentOption(JSON.parse(res).tasks);
+            taskUtils.generateSelectParentOption(JSON.parse(res).tasks);
         }).then(function(){
-            taskUtils.generateOptions(parentTaskList);
+            // taskUtils.generateOptions(parentTaskList);
             setEditFunction();
         })
     }
@@ -313,8 +321,10 @@ $(document).ready(function(){
         }).then((res) =>{
             // setStatusOptions(res.task[0]);
             if(res.task[0]){
+                // $("#addTask").modal("show");
                 $("#addTask").modal("show");
-                setTaskSelectStatusOption(res.task[0].allowDone)
+                
+                taskUtils.setTaskSelectStatusOption(statusSelect, res.task[0].allowDone)//REMOVER DAKI
                 taskUtils.setDataModal(res.task[0], totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
             }else{
                 $("#notFoundTaks").modal("show");
