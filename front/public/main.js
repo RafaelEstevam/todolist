@@ -71,6 +71,11 @@ $(document).ready(function(){
     })
 
     $(formSearchTask).on("submit", function(e){
+
+        /**
+         * Função que busca a tarefa pelo formulário de busca
+         */
+
         e.preventDefault();
         taskUtils.restoreDataModal(totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
         showEditModal($(searchIdInput).val());
@@ -225,7 +230,7 @@ $(document).ready(function(){
     function updateAll (task, taskId){
         
         /**
-         * Edita uma tarefa
+         * Edita uma tarefa e faz um update também nas tarefas "pai"
          * task - Dados da tarefa
          * id - Id da tarefa
          */

@@ -4,7 +4,7 @@ var parentTaskList = [];
 
 var f = {
 
-    dataTask: {oldParentTaskId: 0},
+    dataTask: {oldParentTaskId: 0}, //Objeto que recebe todos os dados da tarefa que está sendo editada.
 
     appendItem: (parent, item) =>{
         
@@ -51,6 +51,11 @@ var f = {
     },
 
     changeIndexTree: (task, taskList) =>{
+        /**
+         * Atualiza o index das subtarefas de acordo com o index da tarefa principal
+         * task(object) - tarefa atual
+         * taskList(array) - subtarefas da tarefa atual
+         */
         taskList.forEach(function(item){
             item.index = task.index + 1
             f.changeIndexTree(item, item.subtask)
@@ -58,6 +63,9 @@ var f = {
     },
 
     setUpdateDataTask: () =>{
+        /**
+         * Faz o update de novas informações ao objeto dataTask.
+         */
         f.dataTask.name = $("input[name='name']").val()
         f.dataTask.score =  parseInt($("input[name='score']").val())
         f.dataTask.totalScore = 0
@@ -65,6 +73,12 @@ var f = {
     },
 
     setOnChangeParentTaskSelect: (indexParentInput, parentTaskSelect) => {
+
+        /**
+         * Atribiu ao seletor de tarefa principal o comportamento de atualizar o index da tarefa selecionada e das subtarefas.
+         * Faz o update das informações relacionadas à seleção da tarefa.
+         */
+
         $(indexParentInput).removeAttr('min');
         $(indexParentInput).val($(parentTaskSelect).children("option:selected").data('index') + 1);
         
@@ -76,6 +90,14 @@ var f = {
     },
 
     setTaskSelectStatusOption: (statusSelect, allowDone) =>{
+
+        /**
+         * Adiciona/Remove as opções de seleção de status da tarefa de acordo com o parâmetro AllowDone,
+         * que informa se a tarefa pode ser dada como concluida.
+         * statusSelect(Element) - Elemento que recebe as opções.
+         * allowDone(string) - Indicador de conclusão de uma tarefa e suas subtarefas
+         */
+
         $(statusSelect).children().remove()
         $(statusSelect).append('<option value="">Selecione um status</option>');
         $(statusSelect).append('<option value="to-do">Para fazer</option>')
@@ -108,6 +130,10 @@ var f = {
     },
 
     removeAddDefaultSelectOptions: (parentTaskSelect) =>{
+        /**
+         * Adiciona/remove as opções padrões do seletor de tarefas.
+         * statusSelect(parentTaskSelect) - Elemento que recebe as opções.
+         */
         parentTaskList = [];
         $(parentTaskSelect).children().remove()
         $(parentTaskSelect).append('<option data-index="0" value="0">Tarefa principal</option>');
@@ -157,10 +183,21 @@ var f = {
     },
 
     removeOption: (taskId) =>{
+        /**
+         * Remove uma tarefa do seletor de acordo com o ID. 
+         * Esse recurso serve para impossibilitar que o usuário selecione uma tarefa que já está dentro de sua 
+         * árvore de tarefas, e impossibilita a seleção da mesma tarefa.
+         */
+
         $(parentTaskSelect).find('option[value="'+ taskId +'"]').remove()
     },
 
     removeSelectOptions: (listOptions, parentTaskSelect) =>{
+        /**
+         * Remove uma tarefa do seletor de acordo com o ID.
+         * listOptions(array) - Lista de ids que devem ser removidos da seleção
+         * parentTaskSelect - Elemento referência para busca das opções
+         */
         listOptions.forEach(function(item){
             f.removeOption(item.id)
             f.removeSelectOptions(item.subtask, parentTaskSelect);
@@ -168,7 +205,7 @@ var f = {
     },
 
     setDataModal: (task, totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput) =>{
-        /** Apresentar os dados da task no popup
+        /** Apresentar os dados da task no popup e atribui o valor de task ao objeto dataTask
          * totalPoints(object) - TAG html que recebe os pontos totais da tarefa
          * scoreTask(object) - TAG html que recebe os pontos da tarefa
          * idInput(object) - TAG html que recebe o ID da tarefa
@@ -230,6 +267,12 @@ var f = {
     },
 
     setItem: (data) =>{
+        /**
+         * Exibe, na interface, um novo elemento que representa a tarefa adicionada/atualizada sem a
+         * necessidade de recarregamento da tela.
+         * data(object) - Dados usados para criação desse elemento.
+         */
+
         $("#"+data.id).remove();
         if(data.index == 1){
             f.appendItem($(historyWrapper), data);
@@ -243,10 +286,15 @@ var f = {
         f.setBtnDrowdown(data);
     },
 
-    getParentAndRefresh: (parentTasiId) =>{
+    getParentAndRefresh: (parentTaskId) =>{
+        /**
+         * Atualiza a tarefa pai
+         * parentTaskId(int) - Id da tarefa pai
+         */
+
         $.ajax({
             type: "GET",
-            url: api + "tasks/" + parentTasiId,
+            url: api + "tasks/" + parentTaskId,
             contentType: "application/json; charset=utf-8",
         }).then(function(res){
             f.refreshParentTasks(res.task[0])
@@ -254,6 +302,14 @@ var f = {
     },
 
     refreshTask: (data) =>{
+
+        /**
+         * Atualiza o status da tarefa na listagem de tarefas, de acordo com seu status.
+         * Se a tarefa estiver com o status done mas com o allowDone como 'false', é colocado um 
+         * status de alerta, indicando que aquela tarefa recebeu uma nova subtarefa não completada.
+         * data(object) - informações da tarefa
+         */
+
         if(data.allowDone == "false" && data.status == "done"){
             $("#item-"+data.id).addClass("false")
         }else{
@@ -265,6 +321,12 @@ var f = {
     },
 
     refreshOldParentTasks: (data) =>{
+
+        /**
+         * Faz uma atualização da tarefa pai antiga da tarefa editada.
+         * data(object) - dados da tarefa
+         */
+
         f.refreshTask(data);
 
         if(data.oldParentTaskId > 0){
@@ -273,6 +335,12 @@ var f = {
     },
 
     refreshParentTasks: (data) => {
+
+        /**
+         * Faz uma atualização da tarefa pai da tarefa editada.
+         * data(object) - dados da tarefa
+         */
+
         f.refreshTask(data);
 
         if(data.parentTaskId > 0){
@@ -286,14 +354,22 @@ var f = {
     },
 
     setBtnDrowdown: (data) =>{
+        /**
+         * Adiciona botão de dropdown a tarefa
+         * data(object) - dados da tarefa
+         */
         $("#btn-drop-"+data.parentTaskId).addClass("dropdown")
     },
 
     removeBtnDrowdown: (id) =>{
+        /**
+         * Remove botão de dropdown a tarefa
+         * id(int) - id da tarefa
+         */
         $("#btn-drop-"+id).removeClass("dropdown")
     },
 
-    deleteItem: (data) =>{
+    deleteItem: (data) =>{ //DEPRECIADO
         $("#"+data).remove();
     }
 }

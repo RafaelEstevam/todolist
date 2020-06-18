@@ -114,7 +114,8 @@ def calcScoreTasks(mergedTasks) :
     return mergedTasks
 
 def validateAllTasksAllowDone(task, taskList):
-    # Verifica se todas as tarefas estão como done e se podem ser concluidas
+    # Verifica se todas as tarefas estão como done e se podem ser concluidas Se a somatória de allowDone
+    # for igual ao tamanho da lista, então a tarefa pode ser concluida.
     # - task(object) = tarefa atual
     # - taskList(array) = lista de tarefas da tarefa atual
 
@@ -130,7 +131,7 @@ def validateAllTasksAllowDone(task, taskList):
 
 
 def validateAllTasksDone(task, taskList):
-    # Verifica se todas as tarefas estão como done
+    # Verifica se todas as tarefas estão como done, considerando o tamanho da lista.
     # - task(object) = tarefa atual
     # - taskList(array) = lista de tarefas da tarefa atual
 
@@ -145,6 +146,10 @@ def validateAllTasksDone(task, taskList):
         task['allowDone'] = 'false'
 
 def setStatusOption(taskList):
+    # Inicia a validação de todas as tarefas de uma lista.
+    # - taskList(array) = lista de tarefas a ser validada
+    # Retorna a lista de tarefas para ser processada commo json
+
     for task in taskList:
         if len(task['subtask']) > 0:
             validateAllTasksDone(task, task['subtask'])
@@ -253,6 +258,11 @@ def editTaskAndProcessCSV(taskId, request):
     return taskUtils.getTask(taskId)
 
 def getListTasks(task, newTaskListV2):
+
+    # Adiciona as subtarefas numa lista para ser processada no csv posteriormente
+    # - task(object) = tarefa que está sendo atualizada
+    # - newTaskListV2 = lista vazia que receberá as subtarefas
+
     if len(task["subtask"]) > 0 :
         for item in task["subtask"]:
             getListTasks(item, newTaskListV2)
@@ -262,6 +272,11 @@ def getListTasks(task, newTaskListV2):
         
 
 def updateTaskAndProcessCSV(taskId, request):
+
+    # - taskId(int) = ID da tarefa que será editada
+    # - request = Biblioteca request importada no main.py
+    # Faz um update da tarefa e das suas subtarefas.
+
     json_data = request.get_json()
 
     newTaskListV2 = []
