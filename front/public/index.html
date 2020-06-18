@@ -56,22 +56,25 @@
                                 <h2 id="modalTitle" class="font-weight-light text-white">Dados da tarefa</h2>
                             </div>
                             <div class="col-12 d-flex justify-content-between">
-                                <p class="text-white font-weight-bold">Pontuação total: <span id="totalPoints"></span></p>
-                                <p class="text-white font-weight-bold">Pontuação: <span id="scoreTask"></span></p>
+                                <p class="text-white font-weight-bold main-task-total-score main-bg-primary">Pontuação total: <span id="totalPoints"></span></p>
+                                <p class="text-white font-weight-bold main-task-total-score main-bg-primary">Pontuação: <span id="scoreTask"></span></p>
                             </div>
                             <div class="col-12 text-white">
                                 <input type="hidden" placeholder="ID da tarefa (preenchido automaticamente)" id="idInput" readonly="readonly" name="id" class="form-control main-bg-gray text-white main-input mb-3">
                             </div>
                             <div class="col-12 text-white">
-                                <input type="text" id="nameInput" placeholder="Nome da tarefa" name="name" class="form-control main-bg-gray text-white main-input mb-3">
+                                <label>Nome da tarefa: </label>
+                                <input required type="text" id="nameInput" placeholder="Nome da tarefa" name="name" class="form-control main-bg-gray text-white main-input mb-3">
                             </div>
                             <div class="col-12 text-white">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <input type="number" id="scoreInput" placeholder="Pontuação" name="score" class="form-control main-bg-gray text-white main-input mb-3">
+                                        <label>Pontuação da tarefa: </label>
+                                        <input required type="number" id="scoreInput" placeholder="Pontuação" name="score" class="form-control main-bg-gray text-white main-input mb-3">
                                     </div>
                                     <div class="col-md-6">
-                                        <select name="status" id="statusSelect" class="form-control main-bg-gray text-white main-input mb-3">
+                                        <label>Status da tarefa: </label>
+                                        <select required name="status" id="statusSelect" class="form-control main-bg-gray text-white main-input mb-3">
                                             <option value="">Selecione um status</option>
                                             <!-- <option value="to-do">Para fazer</option>
                                             <option value="done">Concluida</option>
@@ -82,12 +85,13 @@
                                 </div>
                             </div>
                             <div class="col-12 text-white">
-                                <select class="form-control main-bg-gray text-white main-input mb-3" id="parentTaskSelect" name="parentTaskId">
-                                    <option data-index="0" value="0">Tarefa principal</option>
+                                <label>Selecione uma tarefa pai </label>
+                                <select required class="form-control main-bg-gray text-white main-input mb-3" id="parentTaskSelect" name="parentTaskId">
+                                    <option data-index="0" value="0">Sem tarefa pai (Tarefa principal)</option>
                                 </select>
                             </div>
                             <div class="col-md-12 mb-3">
-                                <input value="1" readonly="readonly" name="index" id="indexParentInput" class="form-control main-bg-gray text-white main-input mb-3">
+                                <input value="1" type="hidden" readonly="readonly" name="index" id="indexParentInput" class="form-control main-bg-gray text-white main-input mb-3">
                             </div>
                         </div>
                         <div class="row">

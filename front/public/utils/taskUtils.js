@@ -29,7 +29,7 @@ var f = {
                     '" data-total-score="'+ item.totalScore +'">' + 
                         '<span id="item-' + item.id + '" class="main-task-status main-rounded '+ item.status +'"> <span class="ml-2">ID: '+ item.id + ' - ' + item.name + '</span></span>' +
                         '<div class="d-flex justify-content-center align-items-center">'+
-                            '<span class="ml-2 main-task-total-score"> Pontuação Total: '+ currentScore + '</span>' +
+                            // '<span class="ml-2 main-task-total-score"> Pontuação Total: '+ currentScore + '</span>' +
                             '<span class="ml-2 main-task-total-score"> Pontuação: '+ item.score + '</span>' +
                             '<button title="Ver tarefa" data-id="'+item.id+'" class="ml-3 main-circle main-btn main-bg-deep text-white edit" ><i class="fa fa-pencil"></i></button>' +
                             addDropdownButton + 
@@ -56,10 +56,12 @@ var f = {
          * task(object) - tarefa atual
          * taskList(array) - subtarefas da tarefa atual
          */
-        taskList.forEach(function(item){
-            item.index = task.index + 1
-            f.changeIndexTree(item, item.subtask)
-        })
+        if(taskList){
+            taskList.forEach(function(item){
+                item.index = task.index + 1
+                f.changeIndexTree(item, item.subtask)
+            })
+        }
     },
 
     setUpdateDataTask: () =>{
@@ -136,7 +138,7 @@ var f = {
          */
         parentTaskList = [];
         $(parentTaskSelect).children().remove()
-        $(parentTaskSelect).append('<option data-index="0" value="0">Tarefa principal</option>');
+        $(parentTaskSelect).append('<option data-index="0" value="0">Sem tarefa pai (Tarefa principal)</option>');
     },
 
     generateTaskOptions: (parentTaskSelect, id) =>{
