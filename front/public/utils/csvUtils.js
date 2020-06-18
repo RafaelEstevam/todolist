@@ -15,10 +15,11 @@ export default {
                     id: parseInt(itemTask[0]),
                     index: parseInt(itemTask[1]),
                     name: itemTask[2],
-                    parentTaskId: parseInt(itemTask[3]),
-                    score: parseInt(itemTask[4]),
-                    totalScore: parseInt(itemTask[5]),
-                    status: itemTask[6],
+                    oldParentTaskId: 0,
+                    parentTaskId: parseInt(itemTask[4]),
+                    score: parseInt(itemTask[5]),
+                    totalScore: parseInt(itemTask[6]),
+                    status: itemTask[7],
                     subtask: [],
                 }
                 csv_tasks_merged.push(csvTask);

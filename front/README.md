@@ -7,6 +7,7 @@ Após isso, na raiz do projeto front rodar o comando:
 
 ```
 npm install
+npm install nodemon
 
 ```
 Para iniciar o front, na raiz do projeto front, no terminal rodar o comando:

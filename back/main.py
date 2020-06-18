@@ -22,6 +22,7 @@ from flask_cors import CORS, cross_origin
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 300
 
 @app.route("/")
 def hello():
@@ -33,10 +34,10 @@ def createCSV():
     return csvUtils.processCSV(request)
 
 @app.route("/csv/export", methods=['GET'])
-@cross_origin()
 def getCSV():
     path = "./csvs/newfile.csv"
-    return send_file(path, as_attachment=True)
+    file = send_file(path, attachment_filename='report.csv', as_attachment=True, cache_timeout=-1)
+    return file
 
 @app.route("/tasks", methods=['GET'])
 @cross_origin()

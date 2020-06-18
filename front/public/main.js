@@ -34,7 +34,6 @@ $(document).ready(function(){
     var addTaskButton = $("#addTaskButton"); //TAG HTTML
     var totalPoints = $("#totalPoints"); //TAG HTTML
     var scoreTask = $("#scoreTask"); //TAG HTTML
-    // var parentTaskList = [];
     var tasks = {};
     var setStatusDone = false;
     
@@ -59,11 +58,6 @@ $(document).ready(function(){
             tasks = {"tasks":[taskItem]};
             store(tasks); // Quando for uma nova tarefa sem ID
         }else{
-
-            // taskUtils.dataTask.name = $("input[name='name']").val()
-            // taskUtils.dataTask.score =  parseInt($("input[name='score']").val())
-            // taskUtils.dataTask.totalScore = 0
-            // taskUtils.dataTask.status = $("select[name='status']").val()
             taskUtils.setUpdateDataTask();
 
             if(taskUtils.dataTask.subtask.length > 0){
@@ -96,7 +90,7 @@ $(document).ready(function(){
         e.preventDefault();
         var csvList = csvUtils.csvSave();
         importTasks(csvList);
-        destroyDashboard();
+        window.location.reload();
         init();
     })
 
@@ -122,35 +116,13 @@ $(document).ready(function(){
         taskUtils.setOnChangeParentTaskSelect(indexParentInput, parentTaskSelect)
     })
 
-    // function generateSelectParentOption(taskList){
-
-    //     /** 
-    //      * Lê todas as listas de tarefas e subtarefas e adiciona a um novo array para ordená-la pelo id
-    //      */
-
-    //     taskList.forEach(function(item){
-    //         if(item.subtask.length > 0){
-    //             parentTaskList.push(item);
-    //             generateSelectParentOption(item.subtask)
-    //         }else{
-    //             parentTaskList.push(item);
-    //         }
-    //     })
-    //     parentTaskList.sort(function(a,b){
-    //         return a.id - b.id;
-    //     })
-    // }
-
     function destroyDashboard(){
 
         /**
          * Remove os dados atuais da interface
          */
 
-        // parentTaskList = [];
         $(historyWrapper).children().remove()
-        // $(parentTaskSelect).children().remove()
-        // $(parentTaskSelect).append('<option data-index="0" value="0">Tarefa principal</option>');
         taskUtils.removeAddDefaultSelectOptions(parentTaskSelect);
         $(indexParentInput).val(1);
     }
@@ -181,17 +153,6 @@ $(document).ready(function(){
         })
     }
 
-    // function setTaskSelectStatusOption(allowDone){
-    //     $(statusSelect).children().remove()
-    //     $(statusSelect).append('<option value="">Selecione um status</option>');
-    //     $(statusSelect).append('<option value="to-do">Para fazer</option>')
-    //     $(statusSelect).append('<option value="in-progress">Em progresso</option>')
-    //     $(statusSelect).append('<option value="blocked">Bloqueada</option>')
-    //     if(allowDone == "true"){
-    //         $(statusSelect).append('<option value="done">Concluida</option>');
-    //     }
-    // }
-
     function init(){
 
         /**
@@ -217,9 +178,7 @@ $(document).ready(function(){
             taskUtils.refreshParentTasks(res)
             taskUtils.setItem(res)
             setEditFunction();
-            // taskUtils.setItem(res);
-            // destroyDashboard();
-            // init();
+            
         })
     }
     
@@ -235,15 +194,13 @@ $(document).ready(function(){
             contentType: "application/json; charset=utf-8",
         }).then(function (res){
             taskUtils.generateList($(historyWrapper), JSON.parse(res));
-            // generateSelectParentOption(JSON.parse(res).tasks);
             taskUtils.generateSelectParentOption(JSON.parse(res).tasks);
         }).then(function(){
-            // taskUtils.generateOptions(parentTaskList);
             setEditFunction();
         })
     }
 
-    function update (task, task_id){
+    function update (task, taskId){
         /**
          * Edita uma tarefa
          * task - Dados da tarefa
@@ -252,24 +209,20 @@ $(document).ready(function(){
 
         $.ajax({
             type: "PUT",
-            url: api + "tasks/" + task_id,
+            url: api + "tasks/" + taskId,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(task),
             dataType: 'json',
         }).then((res) =>{
-            console.log(res)
-            
             taskUtils.refreshOldParentTasks(res.task[0])
             taskUtils.refreshParentTasks(res.task[0])
             taskUtils.setItem(res.task[0])
             setEditFunction();
 
-            // destroyDashboard();
-            // init();
         })
     }
     
-    function updateAll (task, task_id){
+    function updateAll (task, taskId){
         
         /**
          * Edita uma tarefa
@@ -279,7 +232,7 @@ $(document).ready(function(){
 
         $.ajax({
             type: "PUT",
-            url: api + "tasks/v2/" + task_id,
+            url: api + "tasks/v2/" + taskId,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(task),
             dataType: 'json',
@@ -288,48 +241,48 @@ $(document).ready(function(){
             taskUtils.refreshParentTasks(res.task[0])
             taskUtils.setItem(res.task[0])
             setEditFunction();
-            // destroyDashboard();
-            // init();
         })
     }
     
-    function destroy(task_id){
+    function destroy(taskId){
 
         /**
          * Apaga uma tarefa de acordo com o ID
          * id - Id da tarefa
          */
 
-        $.ajax({
-            type: "DELETE",
-            url: api + "tasks/" + task_id,
-            contentType: "application/json; charset=utf-8",
-        }).then((res) =>{
-            // taskUtils.deleteItem(task_id);
-            destroyDashboard();
-            init();
-        })
+        if(confirm("Deseja mesmo apagar essa tarefa?")){
+            $.ajax({
+                type: "DELETE",
+                url: api + "tasks/" + taskId,
+                contentType: "application/json; charset=utf-8",
+            }).then((res) =>{
+    
+                destroyDashboard();
+                init();
+            })
+        }
     }
     
-    function index(task_id){
+    function index(taskId){
 
         /**
          * Consulta uma tarefa de acordo com o ID
-         * task_id - Id da tarefa
+         * taskId - Id da tarefa
          */
 
         $.ajax({
             type: "GET",
-            url: api + "tasks/" + task_id,
+            url: api + "tasks/" + taskId,
             contentType: "application/json; charset=utf-8",
         }).then((res) =>{
-            // setStatusOptions(res.task[0]);
             if(res.task[0]){
-                // $("#addTask").modal("show");
                 $("#addTask").modal("show");
                 
                 taskUtils.setTaskSelectStatusOption(statusSelect, res.task[0].allowDone)//REMOVER DAKI
                 taskUtils.setDataModal(res.task[0], totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput);
+                taskUtils.removeSelectOptions(res.task[0].subtask, parentTaskSelect);
+                taskUtils.removeOption(res.task[0].id);
             }else{
                 $("#notFoundTaks").modal("show");
             }

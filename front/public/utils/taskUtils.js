@@ -17,9 +17,9 @@ var f = {
             item.status = "false"
         }
 
+        var currentScore = item.totalScore == 0 ? item.score : item.totalScore
         var addDropdownButton = '<button id="btn-drop-'+ item.id +'" class="ml-3 main-circle main-btn bg-transparent text-white main-dropdown dropdown" ><i class="fa fa-chevron-down"></i></button>'
         addDropdownButton = item.subtask.length > 0 ? addDropdownButton : '<button id="btn-drop-'+ item.id +'" class="ml-3 main-circle main-btn bg-transparent text-white main-dropdown" ><i class="fa fa-chevron-down"></i></button>'
-        // addDropdownButton = item.subtask.length > 0 ? addDropdownButton : '';
         
         $(parent).append(
             '<ul data-index="' + item.index +'" id="'+item.id+'" class="main-tasks main-rounded">' +
@@ -27,8 +27,10 @@ var f = {
                     'data-id="'+item.id +
                     '" data-score="'+item.score +
                     '" data-total-score="'+ item.totalScore +'">' + 
-                        '<span id="item-' + item.id + '" class="main-task-status main-rounded '+ item.status +'">ID: '+ item.id + ' - ' + item.name + '</span>' +
+                        '<span id="item-' + item.id + '" class="main-task-status main-rounded '+ item.status +'"> <span class="ml-2">ID: '+ item.id + ' - ' + item.name + '</span></span>' +
                         '<div class="d-flex justify-content-center align-items-center">'+
+                            '<span class="ml-2 main-task-total-score"> Pontuação Total: '+ currentScore + '</span>' +
+                            '<span class="ml-2 main-task-total-score"> Pontuação: '+ item.score + '</span>' +
                             '<button title="Ver tarefa" data-id="'+item.id+'" class="ml-3 main-circle main-btn main-bg-deep text-white edit" ><i class="fa fa-pencil"></i></button>' +
                             addDropdownButton + 
                         '</div>' +
@@ -81,6 +83,8 @@ var f = {
         $(statusSelect).append('<option value="blocked">Bloqueada</option>')
         if(allowDone == "true"){
             $(statusSelect).append('<option value="done">Concluida</option>');
+        }else{
+            $(statusSelect).append('<option value="done">Alerta</option>');
         }
     },
 
@@ -109,7 +113,7 @@ var f = {
         $(parentTaskSelect).append('<option data-index="0" value="0">Tarefa principal</option>');
     },
 
-    generateTaskOptions: (parentTaskSelect) =>{
+    generateTaskOptions: (parentTaskSelect, id) =>{
 
         /** Adiciona opções no select de tarefa.
          * parentTaskSelect(element) - Componente que recebe a lista de tarefas
@@ -126,19 +130,7 @@ var f = {
             })
         })
 
-        // parentTaskList.forEach(function(item){
-        //     $(parentTaskSelect).append('<option data-index="'+item.index+'" value="' + item.id + '">'+ item.id + ' - ' + item.name+'</option>')
-        // })
-
-        // $(parentTaskSelect).on("change", function(){
-        //     $(indexParentInput).removeAttr('min')
-        //     $(indexParentInput).val($(this).children("option:selected").data('index') + 1)
-            
-        //     f.dataTask.index = parseInt($("input[name='index']").val());
-        //     f.dataTask.parentTaskId = parseInt($("select[name='parentTaskId']").val());
-
-        //     f.changeIndexTree(f.dataTask, f.dataTask.subtask);
-        // })
+        
     },
 
     restoreDataModal: (totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput) =>{
@@ -164,6 +156,17 @@ var f = {
         $(indexParentInput).val("1");
     },
 
+    removeOption: (taskId) =>{
+        $(parentTaskSelect).find('option[value="'+ taskId +'"]').remove()
+    },
+
+    removeSelectOptions: (listOptions, parentTaskSelect) =>{
+        listOptions.forEach(function(item){
+            f.removeOption(item.id)
+            f.removeSelectOptions(item.subtask, parentTaskSelect);
+        })
+    },
+
     setDataModal: (task, totalPoints, scoreTask, idInput, nameInput, scoreInput, statusSelect, parentTaskSelect, indexParentInput) =>{
         /** Apresentar os dados da task no popup
          * totalPoints(object) - TAG html que recebe os pontos totais da tarefa
@@ -177,6 +180,7 @@ var f = {
          */
 
         f.dataTask = task;
+        parentTaskList = [];
 
         if(task){
             var totalScore = task.totalScore > 0 ? task.totalScore : task.score
@@ -223,8 +227,6 @@ var f = {
                 f.generateSubtaskList(task, task.subtask);
             }
         })
-        // var mainTasks = $('ul.main-tasks');
-        // f.addEventMainTask($(mainTasks));
     },
 
     setItem: (data) =>{
@@ -271,27 +273,24 @@ var f = {
     },
 
     refreshParentTasks: (data) => {
-        // if(data.allowDone == "false" && data.status == "done"){
-        //     $("#item-"+data.id).addClass("false")
-        // }else{
-        //     if($("#item-"+data.id).hasClass("false")){
-        //         $("#item-"+data.id).removeClass("false")
-        //     }
-        //     $("#item-"+data.id).addClass(data.status)
-        // }
-
-        // console.log(data)
-
         f.refreshTask(data);
 
         if(data.parentTaskId > 0){
             f.getParentAndRefresh(data.parentTaskId)
         }
 
+        if(data.subtask.length == 0){
+            f.removeBtnDrowdown(data.id)
+        }
+
     },
 
     setBtnDrowdown: (data) =>{
         $("#btn-drop-"+data.parentTaskId).addClass("dropdown")
+    },
+
+    removeBtnDrowdown: (id) =>{
+        $("#btn-drop-"+id).removeClass("dropdown")
     },
 
     deleteItem: (data) =>{

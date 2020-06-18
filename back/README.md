@@ -2,7 +2,7 @@
 
 ## Inicialização do projeto
 
-Para iniciar a aplicação é necessário instalar o Python.
+Para iniciar a aplicação é necessário instalar o Python e iniciar o ambiente virtual.
 
 Após isso, instalar a biblioteca FLASK e Flask Cors
 
@@ -12,9 +12,10 @@ pip install -U flask-cors
 
 ```
 
-Para iniciar o back, na raiz do projeto front, no terminal rodar o comando:
+Para iniciar o back, na raiz do projeto front, no terminal rodar os seguintes comandos:
 
 ```
+root\env\Scripts\activate.bat
 python main.py
 
 ```

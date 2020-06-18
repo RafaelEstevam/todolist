@@ -17,7 +17,10 @@
                 <div class="interface-wrapper-tools">
                     <div class="main d-flex align-itens-center justify-content-between">
                         <div class="interface-wrapper-tools-buttons">
-                            <form class="mb-0" id="formSearchTask">
+                            <button class="main-circle main-btn main-bg-dark text-white mr-3 font-weight-bold" data-toggle="modal" data-target="#help">?</button>
+                        </div>
+                        <div class="interface-wrapper-tools-buttons">
+                            <form class="mb-0 mr-3" id="formSearchTask">
                                 <div class="input-group">
                                     <input id="searchIdInput" type="text" class="form-control search-form-input border-0 main-bg-dark text-white" placeholder="Buscar tarefa por ID">
                                     <div class="input-group-append">
@@ -28,21 +31,22 @@
                         </div>
                         <div class="interface-wrapper-tools-buttons">
                             <button class="main-circle main-btn main-bg-dark text-white mr-3" title="Importar" id="import" data-toggle="modal" data-target="#importTasks"><i class="fa fa-upload"></i></button>
-                            <a href="http://127.0.0.1:5000/csv/export" target="_blank"  title="Exportar" class="main-circle main-btn main-bg-danger text-white mr-3"><i class="fa fa-download"></i></a>
-                            <button id="addTaskButton" class="main-circle main-btn main-bg-primary text-white" type="button"><i class="fa fa-check mr-3"></i> Add Tasks</button>
+                            <a href="http://127.0.0.1:5000/csv/export" target="_blank"  title="Exportar" class="main-circle main-btn main-bg-danger text-white"><i class="fa fa-download"></i></a>
                         </div>
                     </div>
                 </div>
                 <div class="interface-wrapper-dashboard">
                     <div class="container-fluid interface-wrapper-scroll">
-                        <div class="main py-3">
+                        <div class="main py-3 d-flex justify-content-between align-itens-center">
                             <h1 class="text-white font-weight-light">Sprint <span class="font-weight-bold main-text-primary">Backlog</span></h1>
+                            <button id="addTaskButton" class="main-circle main-btn main-bg-primary text-white" type="button"><i class="fa fa-check mr-3"></i> Add Tasks</button>
                         </div>
                         <div id="historyWrapper" class="main interface-wrapper-history"></div>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="modal fade" id="addTask" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content main-bg-dark">
@@ -133,6 +137,45 @@
                             <div class="col-12 text-center text-white py-3">
                                 <h2 id="modalTitle" class="font-weight-light text-white">Tarefa não encontrada</h2>
                             </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 main-bg-deep py-3 d-flex justify-content-end align-itens-center">
+                                <button type="button" class="main-btn main-rounded text-white main-bg-danger mr-3" data-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content main-bg-dark">
+                    <form class="container-fluid mb-0" id="formImportTask">
+                        <div class="row">
+                            <div class="col-12 text-white py-3">
+                                <h2 id="modalTitle" class="font-weight-light text-center">Ajuda</h2>
+                                <h4 class="font-weight-light text-center">Status das tarefas </h4>
+                                <div class="d-flex justify-content-between">
+                                    <small class="main-task-status to-do"></small>
+                                    <small class="main-task-status done"></small>
+                                    <small class="main-task-status in-progress"></small>
+                                    <small class="main-task-status blocked"></small>
+                                </div>
+                                <p>
+                                    <small class="main-task-status false p-0 mr-2"></small>
+                                    Esse status serve para indicar quando uma tarefa "pai" foi dada como concluida, mas que depois de concluida, recebeu uma
+                                    nova tarefa com status diferente de concluida.
+                                </p>
+
+                                <h4 class="font-weight-light text-center">Pontuação das tarefas </h4>
+                                <p>
+                                    Se uma tarefa "pai" possui subtarefas, é feito um cálculo para determinar sua pontuação total de acordo com a soma de todas
+                                    as subtarefas com a sua própria pontuação.  
+                                </p>
+                                
+                            </div>
+
                         </div>
                         <div class="row">
                             <div class="col-12 main-bg-deep py-3 d-flex justify-content-end align-itens-center">
