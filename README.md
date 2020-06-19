@@ -13,3 +13,17 @@ Front-end da aplicação.
 Back-end da aplicação.
 
 Cara diretório possui um README referente a suas configurações e bibliotecas.
+
+# Versão 1.2
+
+Lista de atualizações
+
+- Adicionado Indicador visual de status da tarefa
+- Adicionado Busca de tarefas
+- Adicionado Popup de ajuda
+- Adicionado controle de conclusão de tarefas
+- Adicionado upload de múltiplas tarefas
+- Adicionado venv no backend
+- Ajustes de documentação
+- Correção de bugs
+
