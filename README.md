@@ -22,8 +22,8 @@ Lista de atualizações
 - Adicionado Busca de tarefas
 - Adicionado Popup de ajuda
 - Adicionado controle de conclusão de tarefas
-- Adicionado upload de múltiplas tarefas
-- Adicionado venv no backend
+- Adicionado upload de tarefa e subtarefas
+- Adicionado venv e requirements.txt no backend
 - Ajustes de documentação
 - Correção de bugs
 
